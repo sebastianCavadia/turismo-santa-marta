@@ -1,0 +1,38 @@
+@startuml CU-N1-Reservas
+' Nivel 1 - Expande: Gestionar reservas
+title CU Nivel 1 - Gestionar reservas
+left to right direction
+
+actor "Turista" as TUR
+actor "Prestador" as PRE
+
+rectangle "Gestionar reservas" {
+  usecase "Solicitar reserva" as R1
+  usecase "Validar disponibilidad" as R2
+  usecase "Ver alerta de congestion" as R3
+  usecase "Consultar mis reservas" as R4
+  usecase "Cancelar reserva" as R5
+  usecase "Consultar reservas recibidas" as R6
+  usecase "Confirmar reserva" as R7
+  usecase "Rechazar reserva" as R8
+  usecase "Expirar reserva automaticamente" as R9
+  usecase "Registrar accion en auditoria" as R10
+}
+
+TUR --> R1
+TUR --> R4
+TUR --> R5
+PRE --> R6
+PRE --> R7
+PRE --> R8
+
+R1 ..> R2 : <<include>>
+R3 ..> R1 : <<extend>>
+R7 ..> R10 : <<include>>
+R5 ..> R10 : <<include>>
+
+note right of R9
+  RF-054: sistema, sin actor
+  expira si no se confirma a tiempo
+end note
+@enduml

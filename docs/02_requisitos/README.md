@@ -3,7 +3,10 @@
 ## Contenido
 
 - `especificacion_de_requerimientos.md`: SRS IEEE 29148 v1.0 — 101 RF + 42 RNF + 8 RI.
-- Diagramas de casos de uso (PNG):
+- Diagramas de casos de uso, fuente PlantUML en `puml/` (9 archivos, sin PNG generados en este corte):
+  - `puml/cu-n0-plataforma.puml`: Nivel 0.
+  - `puml/cu-n1-explorar.puml`, `cu-n1-perfil.puml`, `cu-n1-reservas.puml`, `cu-n1-servicios.puml`, `cu-n1-disponibilidad.puml`, `cu-n1-usuarios.puml`, `cu-n1-recomendaciones.puml`, `cu-n1-indicadores.puml`: Nivel 1.
+- Diagramas de referencia en PNG (versión anterior, pendiente de regenerar desde `puml/`):
   - `caso_de_uso_N0.png`: Nivel 0 — vista general de la plataforma.
   - Nivel 1:
     - `explorar_oferta_turistica.png`

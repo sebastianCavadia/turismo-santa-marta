@@ -1,0 +1,32 @@
+@startuml CU-N1-Explorar
+' Nivel 1 - Expande: Explorar oferta turistica
+title CU Nivel 1 - Explorar oferta turistica
+left to right direction
+
+actor "Turista" as TUR
+actor "Visitante anonimo" as VIS
+
+rectangle "Explorar oferta turistica" {
+  usecase "Buscar servicios o atractivos" as B1
+  usecase "Filtrar resultados" as B2
+  usecase "Ver detalle de servicio" as B3
+  usecase "Ver alerta de congestion" as B4
+  usecase "Ver buenas practicas ambientales" as B5
+}
+
+VIS --> B1
+VIS --> B2
+VIS --> B3
+TUR --> B1
+TUR --> B2
+TUR --> B3
+
+B4 ..> B3 : <<extend>>
+B5 ..> B3 : <<extend>>
+
+note right of B2
+  RF-017: paginacion 20 items/pagina
+  RNF-001: respuesta max 3s
+  RF-023: acceso sin autenticar
+end note
+@enduml

@@ -1,0 +1,37 @@
+@startuml CU-N0-Plataforma
+' Nivel 0 - Vista general. Sistema = Plataforma completa
+title CU Nivel 0 - Plataforma Turismo Santa Marta
+left to right direction
+
+actor "Turista" as TUR
+actor "Visitante anonimo" as VIS
+actor "Prestador" as PRE
+actor "Administrador" as ADM
+actor "Gestor Destino" as GES
+actor "Motor de Recomendacion (IA)" as IA
+
+rectangle "Plataforma Turismo Santa Marta" {
+  usecase "Explorar oferta turistica" as CU_E
+  usecase "Gestionar perfil y preferencias" as CU_P
+  usecase "Recibir recomendaciones" as CU_R
+  usecase "Gestionar reservas" as CU_RES
+  usecase "Gestionar servicios turisticos" as CU_S
+  usecase "Gestionar disponibilidad" as CU_D
+  usecase "Gestionar usuarios" as CU_U
+  usecase "Consultar indicadores del destino" as CU_I
+}
+
+VIS --> CU_E
+TUR --> CU_E
+TUR --> CU_P
+TUR --> CU_R
+TUR --> CU_RES
+PRE --> CU_P
+PRE --> CU_S
+PRE --> CU_D
+ADM --> CU_S
+ADM --> CU_U
+ADM --> CU_I
+GES --> CU_I
+CU_R --> IA
+@enduml

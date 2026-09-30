@@ -1,0 +1,25 @@
+@startuml CU-N1-Perfil
+' Nivel 1 - Expande: Gestionar perfil y preferencias
+title CU Nivel 1 - Gestionar perfil y preferencias
+left to right direction
+
+actor "Turista" as TUR
+actor "Prestador" as PRE
+
+rectangle "Gestionar perfil y preferencias" {
+  usecase "Actualizar datos personales" as P1
+  usecase "Configurar preferencias de viaje" as P2
+  usecase "Seleccionar idioma" as P3
+  usecase "Actualizar informacion comercial" as P4
+  usecase "Configurar tipo de servicios ofrecidos" as P5
+  usecase "Dar consentimiento explicito" as P6
+}
+
+TUR --> P1
+TUR --> P2
+TUR --> P3
+PRE --> P4
+PRE --> P5
+
+P2 ..> P6 : <<include>>
+@enduml

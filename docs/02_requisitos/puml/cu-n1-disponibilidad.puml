@@ -1,0 +1,24 @@
+@startuml CU-N1-Disponibilidad
+' Nivel 1 - Expande: Gestionar disponibilidad
+title CU Nivel 1 - Gestionar disponibilidad
+left to right direction
+
+actor "Prestador" as PRE
+
+rectangle "Gestionar disponibilidad" {
+  usecase "Definir fechas y horarios" as D1
+  usecase "Consultar calendario de disponibilidad" as D2
+  usecase "Bloquear fechas u horarios" as D3
+  usecase "Configurar capacidad de servicio" as D4
+}
+
+PRE --> D1
+PRE --> D2
+PRE --> D3
+PRE --> D4
+
+note right of D4
+  RF-073: refleja auto reservas
+  RF-074: no bajar de confirmadas
+end note
+@enduml

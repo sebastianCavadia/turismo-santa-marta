@@ -143,6 +143,7 @@ El Motor de Recomendación basado en IA se integrará como un servicio desacopla
 | Sin integraciones externas reales | No se integrarán sistemas PMS, channel managers ni APIs externas de terceros en esta versión. |
 | Reserva como solicitud | La reserva se manejará como solicitud con estados (pendiente, confirmada, rechazada, cancelada, expirada). |
 | Prestador genérico | Se manejará un actor "Prestador" con subtipos internos (alojamiento, actividades, gastronomía, transporte). |
+| Umbrales finos | Los umbrales finos de calidad (percentiles, % de sesgo IA, legibilidad) se definen en fase de arquitectura con pruebas base. Este SRS deja constancia del criterio, no del número final. |
 
 ---
 
@@ -343,6 +344,8 @@ Los requisitos funcionales se agrupan por módulo para facilitar la trazabilidad
 
 Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 25010.
 
+> **Condiciones de medida:** carga normal = 200 usuarios concurrentes (RNF-004/007). Banda ancha estándar = 10 Mbps o superior. Todo RNF-001..005 se mide bajo esas condiciones.
+
 ---
 
 #### Rendimiento
@@ -357,7 +360,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 
 ---
 
-#### Escalabilidad
+#### Escalabilidad (subcaracterística de Eficiencia del desempeño / Mantenibilidad ISO 25010)
 
 | ID | Requisito |
 |---|---|
@@ -368,7 +371,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 
 ---
 
-#### Disponibilidad
+#### Disponibilidad (subcaracterística de Fiabilidad ISO 25010)
 
 | ID | Requisito |
 |---|---|
@@ -426,7 +429,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 
 ---
 
-#### Interoperabilidad
+#### Compatibilidad — Interoperabilidad (ISO 25010:2011 §4.2)
 
 | ID | Requisito |
 |---|---|
@@ -446,7 +449,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 
 ---
 
-#### Fiabilidad
+#### Fiabilidad (ISO 25010)
 
 | ID | Requisito |
 |---|---|
@@ -455,7 +458,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 
 ---
 
-#### Sostenibilidad
+#### Sostenibilidad (extensión de dominio, fuera de ISO 25010 — trazable a RF-090..093)
 
 | ID | Requisito |
 |---|---|
@@ -474,7 +477,7 @@ Los requisitos no funcionales se agrupan por atributo de calidad según ISO/IEC 
 | RI-004 | **Interfaz externa (IA):** El sistema debe comunicarse con el Motor de Recomendación mediante una API con formato JSON. |
 | RI-005 | **Interfaz externa (IA):** El sistema debe manejar la indisponibilidad del Motor de Recomendación mostrando resultados estándar como alternativa. |
 | RI-006 | **Interfaz de datos:** El sistema debe utilizar una base de datos relacional como almacenamiento principal para datos transaccionales (usuarios, reservas, servicios). |
-| RI-007 | **Interfaz de datos:** El sistema debe evaluar la conveniencia de utilizar almacenamiento adicional (caché, almacenamiento de objetos) según las características de los datos. |
+| RI-007 | **Derogado como requisito:** decisión pendiente de arquitectura — evaluar caché (Redis) y almacenamiento de objetos (S3) vía configuración, sin cambiar el núcleo. |
 | RI-008 | **Interfaz de auditoría:** El sistema debe registrar las acciones críticas en un log de auditoría persistente e inmutable. |
 
 ---
