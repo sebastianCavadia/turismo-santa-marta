@@ -1,32 +1,50 @@
 @startuml CU-N1-Explorar
-' Nivel 1 - Expande: Explorar oferta turistica
+' Nivel 1 - Expande: Explorar oferta turistica (CU_E)
+' Trazabilidad: RF-011..023, RNF-001. VIS anonimo por RF-023.
 title CU Nivel 1 - Explorar oferta turistica
 left to right direction
 
-actor "Turista" as TUR
 actor "Visitante anonimo" as VIS
+actor "Turista" as TUR
 
 rectangle "Explorar oferta turistica" {
-  usecase "Buscar servicios o atractivos" as B1
-  usecase "Filtrar resultados" as B2
-  usecase "Ver detalle de servicio" as B3
-  usecase "Ver alerta de congestion" as B4
-  usecase "Ver buenas practicas ambientales" as B5
+  usecase "Buscar, filtrar y ordenar oferta" as EXP1
+  usecase "Ver detalle de servicio" as EXP2
+  usecase "Ver alerta de congestion" as EXP3
+  usecase "Ver buenas practicas ambientales" as EXP4
 }
 
-VIS --> B1
-VIS --> B2
-VIS --> B3
-TUR --> B1
-TUR --> B2
-TUR --> B3
+' TUR hereda todo lo de VIS (anonimo -> autenticado).
+' Por eso solo VIS se asocia a EXP1/2.
+' Filtros, orden y paginacion son parametros/flujos de EXP1 (no CU independiente), igual que IND4.
+VIS <|-- TUR
 
-B4 ..> B3 : <<extend>>
-B5 ..> B3 : <<extend>>
+VIS --> EXP1
+VIS --> EXP2
 
-note right of B2
-  RF-017: paginacion 20 items/pagina
-  RNF-001: respuesta max 3s
-  RF-023: acceso sin autenticar
+EXP3 ..> EXP2 : <<extend>>
+EXP4 ..> EXP2 : <<extend>>
+
+note right of EXP1
+  RF-011: texto libre.
+  RF-012..016: filtros por
+  categoria, zona, precio,
+  fecha y tipo de servicio.
+  RF-018: orden por relevancia,
+  precio o calificacion.
+  RF-017: paginacion.
+  Filtros, orden y paginacion
+  como parametros (no ovalos).
+  RNF-001: max 3s (carga normal).
+  RF-023: sin autenticar.
+end note
+
+note right of EXP2
+  RF-019: detalle completo.
+  RF-020: disponibilidad actual.
+  RF-112: promedio y opiniones.
+  EXP3 (RF-021) y EXP4 (RF-022/
+  RF-090) son extend
+  condicionales del detalle.
 end note
 @enduml

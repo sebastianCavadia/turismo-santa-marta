@@ -1,0 +1,58 @@
+@startuml CU-N1-Pagos
+' Nivel 1 - Expande: Gestionar pagos (CU_PAG, alcance extendido)
+' Trazabilidad: RF-102..108, RNF-043/044/045, RI-009/010.
+' Wompi sandbox como actor secundario. Pago obligatorio para confirmar.
+title CU Nivel 1 - Gestionar pagos (Wompi sandbox)
+left to right direction
+
+actor "Turista" as TUR
+actor "Prestador" as PRE
+actor "Wompi sandbox" as WOM <<secondary>>
+
+
+rectangle "Gestionar pagos" {
+  usecase "Iniciar pago" as PAG1
+  usecase "Confirmar pago por webhook" as PAG2
+  usecase "Consultar estado y comprobante" as PAG3
+  usecase "Solicitar / ver reembolso" as PAG4
+}
+
+TUR --> PAG1
+TUR --> PAG3
+TUR --> PAG4
+PRE --> PAG3
+PRE --> PAG4
+PAG2 -- WOM
+
+note right of PAG1
+  RF-102: TUR inicia pago de
+  reserva PENDIENTE_PAGO.
+  Redireccion a Wompi sandbox
+  con reference unico.
+  RI-009 (API/checkout JSON).
+end note
+
+note right of PAG2
+  RF-103/104: webhook firmado,
+  firma verificada, idempotente
+  (reference + wompi_id unicos).
+  Solo asi -> PAGADA. Si falla
+  o vence PAGO_TIMEOUT ->
+  FALLIDA/EXPIRADA (job) con
+  reintento. RNF-043/044/045
+  (max 10s, sin PAN/CVV).
+  RI-010. WOM es secundario:
+  notifica, no inicia sesion.
+end note
+
+note bottom of PAG4
+  RF-106: reembolso via Wompi si
+  PAGADA/CONFIRMADA es cancelada
+  (RES3, por TUR) o rechazada
+  (RES6, por PRE). TUR solicita;
+  PRE y TUR consultan estado y
+  comprobante (RF-107, sin PAN).
+  RF-108: auditoria de cada
+  evento de pago.
+end note
+@enduml

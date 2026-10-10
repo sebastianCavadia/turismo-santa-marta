@@ -1,0 +1,54 @@
+@startuml CU-N1-Opiniones
+' Nivel 1 - Expande: Gestionar opiniones (CU_OPI, alcance extendido)
+' Trazabilidad: RF-109..115. Sin PQR formal, sin 2a IA.
+' Solo reserva FINALIZADA, una opinion por reserva.
+title CU Nivel 1 - Gestionar opiniones y calificaciones
+left to right direction
+
+actor "Visitante anonimo" as VIS
+actor "Turista" as TUR
+actor "Administrador" as ADM
+
+rectangle "Gestionar opiniones" {
+  usecase "Publicar opinion" as OPI1
+  usecase "Consultar opiniones" as OPI2
+  usecase "Editar o eliminar mi opinion" as OPI3
+  usecase "Denunciar opinion" as OPI4
+  usecase "Moderar opinion" as OPI5
+}
+
+' TUR hereda consulta anonima (igual que en Explorar/N0)
+VIS <|-- TUR
+
+TUR --> OPI1
+VIS --> OPI2
+TUR --> OPI3
+TUR --> OPI4
+ADM --> OPI5
+
+note right of OPI1
+  RF-109/114: solo con reserva
+  FINALIZADA (fecha/hora pasada),
+  una opinion por reserva.
+  RF-110: 1-5 estrellas + texto
+  minimo configurable.
+end note
+
+note right of OPI2
+  RF-112: promedio + listado
+  con paginacion en el detalle
+  del servicio. Visible sin
+  autenticar (hereda VIS).
+end note
+
+note bottom of OPI5
+  RF-113: TUR denuncia (OPI4);
+  ADM oculta tras moderacion,
+  sin borrado fisico.
+  RF-111: TUR edita/elimina
+  solo la propia.
+  RF-115: auditoria de la
+  moderacion. Sin PQR Ley 1755,
+  sin segunda IA.
+end note
+@enduml

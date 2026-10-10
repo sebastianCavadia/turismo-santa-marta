@@ -1,25 +1,52 @@
 @startuml CU-N1-Perfil
-' Nivel 1 - Expande: Gestionar perfil y preferencias
+' Nivel 1 - Expande: Gestionar perfil y preferencias (CU_P)
+' Trazabilidad: RF-024..030, RF-098..100, RNF-017.
+' Correccion: consentimiento es extend condicional, no include.
 title CU Nivel 1 - Gestionar perfil y preferencias
 left to right direction
 
 actor "Turista" as TUR
 actor "Prestador" as PRE
+actor "Administrador" as ADM
+actor "Gestor del Destino" as GES
 
 rectangle "Gestionar perfil y preferencias" {
-  usecase "Actualizar datos personales" as P1
-  usecase "Configurar preferencias de viaje" as P2
-  usecase "Seleccionar idioma" as P3
-  usecase "Actualizar informacion comercial" as P4
-  usecase "Configurar tipo de servicios ofrecidos" as P5
-  usecase "Dar consentimiento explicito" as P6
+  usecase "Actualizar datos personales" as PER1
+  usecase "Configurar preferencias de viaje" as PER2
+  usecase "Seleccionar idioma" as PER3
+  usecase "Actualizar informacion comercial" as PER4
+  usecase "Configurar tipos de servicio ofrecidos" as PER5
+  usecase "Dar consentimiento explicito" as PER6
 }
 
-TUR --> P1
-TUR --> P2
-TUR --> P3
-PRE --> P4
-PRE --> P5
+TUR --> PER1
+TUR --> PER2
+TUR --> PER3
+PRE --> PER3
+PRE --> PER4
+PRE --> PER5
+ADM --> PER3
+GES --> PER3
 
-P2 ..> P6 : <<include>>
+' Solo primera vez / cuando se usaran datos para IA (RF-030, RNF-017)
+PER6 ..> PER2 : <<extend>>
+
+note right of PER2
+  RF-025: tipos de turismo,
+  presupuesto, actividad fisica.
+  RF-026: accesibilidad /
+  movilidad reducida.
+  Precondicion: PER6 (RF-030,
+  RNF-017) antes de usar datos
+  para IA.
+end note
+
+note bottom of PER4
+  RF-024: datos personales TUR.
+  RF-028/029: info comercial y
+  tipos de servicio (PRE).
+  RF-027 + RF-098..100: idioma
+  ES/EN para todos los roles,
+  persistido entre sesiones.
+end note
 @enduml

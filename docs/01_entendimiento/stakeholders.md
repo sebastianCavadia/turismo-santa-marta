@@ -9,10 +9,10 @@ Este documento identifica a todas las personas, grupos u organizaciones que pued
 Es el usuario final que consume la información y solicita los servicios.
 - **Subtipos:** Nacional, Internacional, Turismo de Naturaleza, Turismo Cultural, Personas con Movilidad Reducida (requieren accesibilidad).
 - **Necesidades Principales:** Encontrar información veraz, comparar opciones, verificar disponibilidad real, solicitar reservas fácilmente y recibir recomendaciones seguras.
-- **Interacción con la Plataforma:** Alta. Acceso desde dispositivos móviles y web. Consulta catálogo, filtra, solicita reservas y recibe recomendaciones.
+- **Interacción con la Plataforma:** Alta. Acceso desde dispositivos móviles y web. Consulta catálogo, filtra, solicita reservas, paga vía Wompi sandbox, opina solo con reserva FINALIZADA y recibe recomendaciones.
 - **Restricciones que le aplican:** Protección de datos personales (Ley 1581 de 2012), consentimiento para uso de datos en recomendaciones.
 
-### 2.2. Prestador de Servicios Turísticos
+### 2.2. Prestador
 Actor que ofrece la capacidad instalada o los servicios en el destino. Se maneja como un actor base con especializaciones debido a que sus reglas de negocio y gestión de disponibilidad difieren.
 - **Interacción con la Plataforma:** Alta. Panel de gestión (Dashboard) para actualizar información, disponibilidad y responder reservas.
 - **Especializaciones (Subtipos):**
@@ -24,7 +24,7 @@ Actor que ofrece la capacidad instalada o los servicios en el destino. Se maneja
 ### 2.3. Administrador de la Plataforma
 Usuario interno responsable de la salud, curaduría y control del ecosistema digital.
 - **Subtipos:** Curador de contenido, Soporte técnico, Auditor de seguridad.
-- **Necesidades Principales:** Validar el registro de nuevos prestadores (evitar fraudes), moderar contenido inapropiado, gestionar roles y permisos, auditar transacciones y monitorear alertas del sistema.
+- **Necesidades Principales:** Validar el registro de nuevos prestadores (evitar fraudes), moderar contenido y opiniones inapropiadas, gestionar roles y permisos, auditar transacciones y pagos, monitorear alertas del sistema.
 - **Interacción con la Plataforma:** Alta (Backend / Panel Administrativo).
 
 ### 2.4. Gestor del Destino (Entidad Pública)
@@ -45,7 +45,7 @@ Organismos que dictan las reglas del juego. No usan la plataforma operativamente
 - **Alcaldía Distrital de Santa Marta:** Ente de gobierno local que regula el uso del espacio público y el ordenamiento territorial.
 
 ### 3.2. Gremios y Asociaciones
-Agrupaciones que representan los intereses de los prestadores de servicios.
+Agrupaciones que representan los intereses de los prestadores.
 - **Cotelco (Capítulo Magdalena):** Asociación hotelera y turística.
 - **Anato (Asociación Colombiana de Agencias de Viajes y Turismo):**
 - **Acodres (Asociación Colombiana de la Industria Gastronómica):**
@@ -57,11 +57,11 @@ Habitantes del destino y comunidades ancestrales.
 - **Necesidades:** Que el turismo no degrade sus territorios sagrados ni su calidad de vida. Que la plataforma promueva el respeto a sus normas culturales y ambientales.
 - **Relación con la Plataforma:** Indirecta, pero crítica para el atributo de **Sostenibilidad** y las restricciones éticas del proyecto.
 
-### 3.4. Proveedores de Servicios Externos (Integraciones Futuras)
-Entidades tecnológicas o de datos de las cuales la plataforma podría alimentarse.
+### 3.4. Proveedores de Servicios Externos
+Entidades tecnológicas o de datos de las cuales la plataforma se alimenta o delega.
+- **Wompi (pasarela sandbox, alcance extendido):** tokeniza y procesa el pago; la Plataforma nunca guarda PAN/CVV, solo reference + estado + firma de webhook.
 - **IDEAM:** Para datos de alertas meteorológicas que afecten actividades turísticas.
 - **Proveedores de Mapas y Geolocalización:** Para el trazado de rutas y límites de áreas protegidas.
-- **Pasarelas de Pago:** (Fuera del alcance actual, pero considerado como stakeholder técnico futuro).
 
 ---
 

@@ -1,31 +1,55 @@
 @startuml CU-N1-Indicadores
-' Nivel 1 - Expande: Consultar indicadores del destino
+' Nivel 1 - Expande: Consultar indicadores del destino (CU_I)
+' Trazabilidad: RF-082..089, RF-093, RNF-042.
+' Correcciones: numeracion secuencial; filtrar es parametro (nota);
+' se fusiona generar/consultar en IND4; ADM solo reporte basico.
+' Alerta de sobrecarga como extend (unifica con EXP3/RES7).
 title CU Nivel 1 - Consultar indicadores del destino
 left to right direction
 
-actor "Gestor Destino" as GES
+actor "Gestor del Destino" as GES
 actor "Administrador" as ADM
 
 rectangle "Consultar indicadores del destino" {
-  usecase "Consultar congestion y capacidad de carga" as I1
-  usecase "Consultar demanda y ocupacion" as I2
-  usecase "Analizar impacto de recomendaciones" as I3
-  usecase "Generar reporte" as I4
-  usecase "Consultar reportes" as I7
-  usecase "Exportar reporte" as I5
-  usecase "Filtrar reportes" as I6
+  usecase "Consultar congestion y capacidad de carga" as IND1
+  usecase "Consultar demanda y ocupacion" as IND2
+  usecase "Analizar impacto de recomendaciones" as IND3
+  usecase "Generar reporte por rango de fechas" as IND4
+  usecase "Exportar reporte" as IND5
+  usecase "Ver alerta de sobrecarga turistica" as IND6
 }
 
-GES --> I1
-GES --> I2
-GES --> I3
-GES --> I4
-GES --> I7
-ADM --> I4
-ADM --> I7
+GES --> IND1
+GES --> IND2
+GES --> IND3
+GES --> IND4
+ADM --> IND4
 
-I5 ..> I4 : <<extend>>
-I5 ..> I7 : <<extend>>
-I6 ..> I4 : <<extend>>
-I6 ..> I7 : <<extend>>
+IND5 ..> IND4 : <<extend>>
+IND6 ..> IND1 : <<extend>>
+
+note right of IND1
+  RF-082 + RF-093 + RNF-042:
+  congestion y capacidad de
+  carga por atractivo/zona.
+  IND6 (RF-083) es extend
+  condicional cuando se excede
+  la capacidad permitida.
+end note
+
+note bottom of IND4
+  RF-084: demanda y ocupacion
+  (IND2). RF-085: impacto de
+  la IA en distribucion (IND3).
+  RF-086/088/089: reporte por
+  fechas con reservas, top
+  consultados/reservados,
+  categorias y zonas; filtros
+  por zona/categoria/periodo
+  como parametros (no ovalos).
+  RF-087: IND5 exporta CSV/PDF
+  (extend). ADM solo IND4
+  basico (flujo prototipo #4);
+  GES consulta completa.
+end note
 @enduml

@@ -1,5 +1,8 @@
 @startuml CU-N1-Servicios
-' Nivel 1 - Expande: Gestionar servicios turisticos
+' Nivel 1 - Expande: Gestionar servicios turisticos (CU_S)
+' Trazabilidad: RF-059..068.
+' Correcciones: validacion es precondicion (no CU);
+' suspender cuenta (USR) != suspender contenido (SER5).
 title CU Nivel 1 - Gestionar servicios turisticos
 left to right direction
 
@@ -7,21 +10,43 @@ actor "Prestador" as PRE
 actor "Administrador" as ADM
 
 rectangle "Gestionar servicios turisticos" {
-  usecase "Registrar servicio" as S1
-  usecase "Editar servicio" as S2
-  usecase "Validar datos del servicio" as S3
-  usecase "Despublicar servicio" as S4
-  usecase "Republicar servicio" as S5
-  usecase "Moderar servicio" as S6
+  usecase "Registrar servicio" as SER1
+  usecase "Editar servicio" as SER2
+  usecase "Eliminar servicio\n(borrado logico)" as SER3
+  usecase "Habilitar servicio" as SER4
+  usecase "Moderar servicio" as SER5
 }
 
-PRE --> S1
-PRE --> S2
-PRE --> S4
-PRE --> S5
-ADM --> S6
+PRE --> SER1
+PRE --> SER2
+PRE --> SER3
+PRE --> SER4
+ADM --> SER5
 
-S1 ..> S3 : <<include>>
-S2 ..> S3 : <<include>>
-' S6 standalone de Admin, sin extend cruzando actores
+note right of SER1
+  RF-059: nombre, descripcion,
+  categoria, precio, ubicacion,
+  imagenes. RF-068: asociado
+  al PRE que lo registra.
+  Precondicion (no ovalo):
+  RF-060/RF-062 validan campos
+  obligatorios.
+end note
+
+note right of SER3
+  RF-063/064: borrado logico
+  reversible via SER4 (valida
+  campos). Respeta reservas
+  PAGADA/CONFIRMADA; bloquea
+  nuevas reservas si eliminado.
+end note
+
+note bottom of SER5
+  RF-065: ADM aprueba/rechaza/
+  suspende contenido (distinto
+  de USR4 suspender cuenta y de
+  RF-066 suspender prestador).
+  RF-067: auditoria de cada
+  moderacion.
+end note
 @enduml

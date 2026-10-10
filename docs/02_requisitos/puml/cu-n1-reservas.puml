@@ -1,38 +1,67 @@
 @startuml CU-N1-Reservas
-' Nivel 1 - Expande: Gestionar reservas
+' Nivel 1 - Expande: Gestionar reservas (CU_RES)
+' Trazabilidad: RF-040..058 + RF-102..108 (pago obligatorio Wompi).
+' Pago obligatorio: sin PAGADA no hay CONFIRMADA. Auditoria en notas.
 title CU Nivel 1 - Gestionar reservas
 left to right direction
 
 actor "Turista" as TUR
 actor "Prestador" as PRE
 
+
 rectangle "Gestionar reservas" {
-  usecase "Solicitar reserva" as R1
-  usecase "Validar disponibilidad" as R2
-  usecase "Ver alerta de congestion" as R3
-  usecase "Consultar mis reservas" as R4
-  usecase "Cancelar reserva" as R5
-  usecase "Consultar reservas recibidas" as R6
-  usecase "Confirmar reserva" as R7
-  usecase "Rechazar reserva" as R8
-  usecase "Expirar reserva automaticamente" as R9
-  usecase "Registrar accion en auditoria" as R10
+  usecase "Solicitar reserva" as RES1
+  usecase "Consultar mis reservas\n(incluye ver detalle)" as RES2
+  usecase "Cancelar reserva" as RES3
+  usecase "Consultar reservas recibidas\n(incluye ver detalle)" as RES4
+  usecase "Confirmar reserva" as RES5
+  usecase "Rechazar reserva" as RES6
+  usecase "Ver alerta de congestion" as RES7
 }
 
-TUR --> R1
-TUR --> R4
-TUR --> R5
-PRE --> R6
-PRE --> R7
-PRE --> R8
+TUR --> RES1
+TUR --> RES2
+TUR --> RES3
+PRE --> RES4
+PRE --> RES5
+PRE --> RES6
 
-R1 ..> R2 : <<include>>
-R3 ..> R1 : <<extend>>
-R7 ..> R10 : <<include>>
-R5 ..> R10 : <<include>>
 
-note right of R9
-  RF-054: sistema, sin actor
-  expira si no se confirma a tiempo
+RES7 ..> RES1 : <<extend>>
+
+note right of RES1
+  RF-040: fecha/hora/cantidad
+  RF-041 + RF-057: valida
+  disponibilidad antes de crear
+  RF-042: nace PENDIENTE_PAGO
+  RF-043: alerta congestion
 end note
+
+note right of RES5
+  Pago obligatorio:
+  RES5 solo si PAGADA
+  (RF-050/RF-105). Sin PAGADA
+  no hay CONFIRMADA.
+  RES6 en PAGADA dispara
+  reembolso (RF-052/RF-106).
+end note
+
+note bottom of RES4
+  RES2 cubre RF-044+045 y RES4
+  cubre RF-048+049 (listado +
+  detalle con estado del pago).
+  RES3 cubre RF-046/047.
+  RF-055/056: disponibilidad
+  auto (ver N1-Disponibilidad).
+  RF-054: expiracion/finalizacion
+  por job configurable, sin actor:
+  PAGO_TIMEOUT 30 min (demo 5),
+  CONFIRMACION_TIMEOUT 48h,
+  job cada 5 min.
+  RF-058: auditoria de cada
+  cambio de estado.
+  Flujo a pago: RES1 -> PAG1
+  (N1-Pagos).
+end note
+
 @enduml

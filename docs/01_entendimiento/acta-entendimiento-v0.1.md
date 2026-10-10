@@ -3,7 +3,7 @@
 ## 1. Información General
 - **Nombre del Proyecto:** Plataforma Digital para la Gestión Integrada y Sostenible del Turismo en Santa Marta.
 - **Versión del Documento:** 0.1
-- **Fecha:** [Fecha]
+- **Fecha:** 2026-10-10
 - **Contexto:** Curso de Arquitectura de Software - Experiencia Final de Diseño (Capstone Design).
 
 ## 2. Planteamiento del Problema
@@ -32,26 +32,31 @@ El sistema en su concepción total abarca:
 ### 4.2. Alcance de Implementación (Prototipo Funcional)
 El prototipo implementará un mínimo del 60% de los casos de uso priorizados, asegurando al menos un flujo completo crítico (desde la consulta hasta la persistencia y respuesta). El 60% actúa como suelo de cumplimiento, no como techo; se priorizarán los flujos que mejor demuestren los atributos de calidad arquitectónicos (escalabilidad, disponibilidad, seguridad).
 
+Metodología: RUP (Inicio / Elaboración / Construcción-1 núcleo 60% / Construcción-2 pago+opiniones / Transición). Persistencia principal: PostgreSQL única (JSONB/FTS; Redis/S3 solo evolución vía configuración).
+
 **Flujos críticos a implementar:**
 1. Consulta y filtrado del catálogo turístico por parte de visitantes.
 2. Registro y gestión de servicios por parte de prestadores (actividades y alojamiento simple).
-3. Solicitud de reserva por el turista y confirmación/rechazo por el prestador.
+3. Solicitud de reserva por el turista + pago obligatorio vía Wompi sandbox + confirmación/rechazo por el prestador.
 4. Generación de un reporte básico de demanda para el administrador.
-5. Consumo del servicio de recomendación (IA) para sugerir alternativas.
+5. Consumo del servicio de recomendación (IA única) para sugerir alternativas.
+6. Opinión/calificación solo con reserva FINALIZADA (Construcción-2).
 
 ## 5. Fuera de Alcance (Exclusiones Explícitas)
 Para garantizar la viabilidad técnica y temporal (6 meses), se excluyen del prototipo:
 - Integración en tiempo real (vía API/Webhooks) con sistemas PMS (Property Management Systems) de hoteles o Channel Managers.
-- Procesamiento de pagos en línea y pasarelas de facturación electrónica.
+- Facturación electrónica DIAN (solo pago sandbox, sin documento fiscal).
+- Almacenamiento de PAN/CVV en la Plataforma.
 - Desarrollo de aplicaciones móviles nativas (se prioriza web responsive / PWA).
-- Chatbots conversacionales abiertos basados en LLMs sin control (se prioriza IA para recomendación estructurada).
+- Chatbots conversacionales abiertos basados en LLMs sin control (se prioriza IA para recomendación estructurada, única IA).
 - Analítica predictiva avanzada de machine learning (se limita a reportes descriptivos y predicción básica si el tiempo lo permite).
+- PQR formal con SLA Ley 1755 (se sustituye por opinión/calificación simple).
 
 ## 6. Stakeholders Principales
 | Actor | Rol en el Sistema | Nivel de Interacción |
 |---|---|---|
 | **Turista / Visitante** | Consumidor de información, solicitante de reservas. | Alto (Frontend) |
-| **Prestador de Servicios** | Proveedor de datos, gestor de disponibilidad y reservas (Alojamiento, Actividades). | Alto (Panel de control) |
+| **Prestador** | Proveedor de datos, gestor de disponibilidad y reservas (Alojamiento, Actividades). | Alto (Panel de control) |
 | **Administrador de Plataforma** | Curador de contenido, soporte, auditor de sistema. | Alto (Backend / Panel Admin) |
 | **Gestor del Destino (Entidad Pública)** | Consumidor de reportes e indicadores para planificación. | Medio (Panel Analítico) |
 | **Comunidad Local / Ambiente** | Beneficiario indirecto de las prácticas de turismo sostenible. | Bajo (Indirecto) |
@@ -75,15 +80,19 @@ Para garantizar la viabilidad técnica y temporal (6 meses), se excluyen del pro
 - **Accesibilidad:** Interfaces adaptadas para distintos niveles de alfabetización digital y personas con discapacidad.
 
 ## 8. Supuestos Iniciales
-1. Los prestadores de servicios tienen la capacidad básica para acceder a internet y actualizar su disponibilidad de forma manual o semimanual.
+1. Los prestadores tienen capacidad básica para acceder a internet y actualizar su disponibilidad de forma manual o semimanual.
 2. La información inicial del catálogo (atractivos públicos) puede ser cargada por los administradores de la plataforma o importada desde fuentes abiertas.
 3. Las entidades públicas actuarán exclusivamente como consumidores de lectura (reportes) en esta fase del proyecto.
 4. La infraestructura cloud seleccionada permitirá simular escenarios de alta concurrencia sin incurrir en costos reales exorbitantes durante la fase de pruebas.
+5. Pagos vía Wompi sandbox con webhook firmado e idempotencia; sin PAN en BD; pago obligatorio para confirmar reserva.
+6. Opinión/calificación solo con reserva FINALIZADA; una opinión por reserva; IA única (recomendación).
 
 ## 9. Decisiones y Lineamientos Iniciales
+- **Metodología:** RUP con fases Inicio / Elaboración / Construcción-1 (núcleo 60%) / Construcción-2 (pago+opiniones) / Transición. Paradigma OO.
+- **Persistencia:** PostgreSQL única como principal (JSONB/FTS; PostGIS si se requiere geo). Redis/S3 solo evolución vía configuración.
 - **Enfoque de Documentación:** Se documentará la arquitectura del sistema completo, aunque la implementación física (código) se limite a los flujos críticos.
-- **Gestión de Reservas:** Se implementará un modelo de "Solicitud y Confirmación" asíncrono, evitando la complejidad de las transacciones de inventario en tiempo real estricto.
-- **Rol de la IA:** Se tratará como un microservicio o componente desacoplado que consume datos del catálogo y preferencias, y devuelve recomendaciones, sin bloquear el flujo principal de la aplicación.
+- **Gestión de Reservas:** Se implementará un modelo de "Solicitud + Pago obligatorio (Wompi sandbox) + Confirmación" asíncrono (pendiente_pago → pagada → confirmada → finalizada), evitando la complejidad de las transacciones de inventario en tiempo real estricto. Expiración/finalización por job configurable (30 min pago/demo 5 min, 48h confirmación, job 5 min), fuera del diagrama N1.
+- **Rol de la IA:** Única IA (recomendación) como microservicio desacoplado que consume datos del catálogo y preferencias, y devuelve recomendaciones, sin bloquear el flujo principal de la aplicación.
 
 ## 10. Riesgos Iniciales Identificados
 | ID | Riesgo | Impacto | Probabilidad | Estrategia de Mitigación |
@@ -91,3 +100,5 @@ Para garantizar la viabilidad técnica y temporal (6 meses), se excluyen del pro
 | R-01 | Subestimación de la complejidad en la integración de múltiples fuentes de datos. | Alto | Media | Limitar el prototipo a carga manual/CSV y definir contratos de API estrictos para futuras integraciones. |
 | R-02 | Incapacidad para simular carga real para validar el atributo de escalabilidad. | Medio | Alta | Utilizar herramientas de inyección de carga (ej. JMeter, k6) sobre el prototipo desplegado en un entorno controlado. |
 | R-03 | Sesgo en el algoritmo de recomendación de IA. | Alto | Media | Implementar logs de explicabilidad y auditoría de las variables que ponderan la recomendación. |
+| R-04 | Fraude / webhook falso / doble cobro en Wompi sandbox. | Alto | Media | Verificar firma del webhook, idempotencia por reference + wompi_id, conciliación asíncrona, sin PAN en BD. |
+| R-05 | Wompi caído o timeout en pico turístico. | Medio | Media | Reintento + estado FALLIDA visible + fallback a reintentar pago sin bloquear consulta (RNF-039/040). |

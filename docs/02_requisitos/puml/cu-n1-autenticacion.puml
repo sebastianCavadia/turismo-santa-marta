@@ -1,0 +1,54 @@
+@startuml CU-N1-Autenticacion
+' Nivel 1 - Expande: Autenticar usuario (CU_A, transversal en N0)
+' Trazabilidad: RF-001..010, RNF-013/014/015/020.
+' Cierra el hueco: antes ningun diagrama cubria Auth.
+title CU Nivel 1 - Autenticar usuario
+left to right direction
+
+actor "Visitante anonimo" as VIS
+actor "Turista" as TUR
+actor "Prestador" as PRE
+actor "Administrador" as ADM
+actor "Gestor del Destino" as GES
+
+rectangle "Autenticar usuario" {
+  usecase "Registrarse" as AUT1
+  usecase "Iniciar sesion" as AUT2
+  usecase "Recuperar contrasena\n(self-service)" as AUT3
+  usecase "Cerrar sesion" as AUT4
+  usecase "Asignar rol adicional" as AUT5
+}
+
+VIS --> AUT1
+VIS --> AUT2
+VIS --> AUT3
+TUR --> AUT4
+PRE --> AUT4
+ADM --> AUT4
+GES --> AUT4
+ADM --> AUT5
+
+note right of AUT1
+  RF-001: registro con datos
+  basicos. RF-005/006: rol
+  automatico Turista/Prestador.
+end note
+
+note right of AUT5
+  RF-007 (+USR3): ADM asigna
+  roles Administrador y Gestor
+  a usuarios existentes.
+end note
+
+note bottom of AUT2
+  RF-008/009/010 como
+  pre/postcondicion (no ovalos):
+  RBAC por rol, bloqueo si
+  desactivada/suspendida, cierre
+  por inactividad configurable.
+  RNF-013/014/015/020 (hash,
+  HTTPS, RBAC, anti-fuerza bruta).
+  AUT3 es self-service; USR5 es
+  reseteo por ADM (ver N1-Usuarios).
+end note
+@enduml

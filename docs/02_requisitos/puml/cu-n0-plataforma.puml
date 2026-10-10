@@ -1,37 +1,84 @@
 @startuml CU-N0-Plataforma
 ' Nivel 0 - Vista general. Sistema = Plataforma completa
+' SRS §2.3, §4. IA y Wompi como actores secundarios. VIS definido por RF-023.
 title CU Nivel 0 - Plataforma Turismo Santa Marta
 left to right direction
 
-actor "Turista" as TUR
 actor "Visitante anonimo" as VIS
+actor "Turista" as TUR
 actor "Prestador" as PRE
 actor "Administrador" as ADM
-actor "Gestor Destino" as GES
-actor "Motor de Recomendacion (IA)" as IA
+actor "Gestor del Destino" as GES
+actor "Motor de Recomendacion (IA)" as IA <<secondary>>
+actor "Wompi sandbox" as WOM <<secondary>>
 
 rectangle "Plataforma Turismo Santa Marta" {
   usecase "Explorar oferta turistica" as CU_E
+  usecase "Autenticar usuario" as CU_A
   usecase "Gestionar perfil y preferencias" as CU_P
   usecase "Recibir recomendaciones" as CU_R
   usecase "Gestionar reservas" as CU_RES
+  usecase "Gestionar pagos" as CU_PAG
+  usecase "Gestionar opiniones" as CU_OPI
   usecase "Gestionar servicios turisticos" as CU_S
   usecase "Gestionar disponibilidad" as CU_D
   usecase "Gestionar usuarios" as CU_U
   usecase "Consultar indicadores del destino" as CU_I
 }
 
+' TUR es un VIS autenticado: hereda exploracion anonima y autenticacion (RF-023).
+' Por herencia NO se repiten asociaciones TUR-->CU_E ni TUR-->CU_A.
+VIS <|-- TUR
+
 VIS --> CU_E
-TUR --> CU_E
+VIS --> CU_A
 TUR --> CU_P
 TUR --> CU_R
 TUR --> CU_RES
+TUR --> CU_PAG
+TUR --> CU_OPI
+PRE --> CU_A
 PRE --> CU_P
 PRE --> CU_S
 PRE --> CU_D
+PRE --> CU_RES
+PRE --> CU_PAG
+ADM --> CU_A
 ADM --> CU_S
 ADM --> CU_U
 ADM --> CU_I
+ADM --> CU_OPI
+GES --> CU_A
 GES --> CU_I
-CU_R --> IA
+
+' Actores secundarios: el sistema los invoca, no inician sesion
+CU_R -- IA
+CU_PAG -- WOM
+
+note right of CU_RES
+  Pago obligatorio (RF-050/RF-105):
+  sin PAGADA (CU_PAG) no hay
+  CONFIRMADA. Ver N1-Reservas
+  y N1-Pagos.
+end note
+
+note right of CU_I
+  ADM solo reporte basico
+  (IND4, flujo prototipo #4).
+  Consulta completa: GES
+  (RF-082..089).
+end note
+
+note bottom of CU_PAG
+  PRE solo consulta estado y
+  comprobante (PAG3). No inicia
+  ni confirma pagos (RF-107).
+end note
+
+note bottom of CU_P
+  CU_P cubre TUR (PER1/PER2/PER6)
+  y PRE (PER4/PER5). Idioma
+  (PER3) para todos los roles.
+end note
+
 @enduml
