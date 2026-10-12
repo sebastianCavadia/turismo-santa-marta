@@ -32,7 +32,7 @@ small{color:#666}
 </section>
 <section>
 <h2>2. Detalle + Reservar y pagar demo (EXP2 + RES1 + PAG demo)</h2>
-<div id="detalle"><small>Elige un servicio de la lista.</small></div>
+<div id="detalleBox"><small>Elige un servicio de la lista.</small></div>
 <div class="row"><input id="fecha" type="date"/><input id="hora" type="time" value="14:00"/><input id="personas" type="number" value="2" min="1"/></div>
 <button onclick="pagarDemo()">Reservar y pagar demo (PAGADA instantánea)</button>
 <div id="pago"></div>
@@ -60,42 +60,56 @@ small{color:#666}
 </main>
 <script>
 const api="";
+const el=(id)=>document.getElementById(id);
+function showErr(box,msg){el(box).innerHTML=`<div class="err">${msg}</div>`}
 async function buscar(){
- const p=new URLSearchParams({size:20,q:q.value||"",zona:zona.value||"",tipo:tipo.value||"",sort:sort.value});
- const r=await fetch(api+"/api/servicios?"+p); const d=await r.json();
- lista.innerHTML=(d.content||[]).map(s=>`<div class="card" onclick="detalle(${s.id})"><b>${s.nombre}</b><br><small>${s.zona} · ${s.tipo} · COP $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}</small></div>`).join("")||"<small>Sin resultados</small>";
+ try{
+  const p=new URLSearchParams({size:20,q:el("q").value||"",zona:el("zona").value||"",tipo:el("tipo").value||"",sort:el("sort").value});
+  const r=await fetch(api+"/api/servicios?"+p); const d=await r.json();
+  el("lista").innerHTML=(d.content||[]).map(s=>`<div class="card" onclick="verDetalle(${s.id})"><b>${s.nombre}</b><br><small>${s.zona} · ${s.tipo} · COP $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}</small></div>`).join("")||"<small>Sin resultados</small>";
+ }catch(e){showErr("lista","No se pudo buscar: "+e.message)}
 }
-async function detalle(id){
- const f=fecha.value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
- const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
- detalle.innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · promedio ${d.promedio}</small>`+
- (d.alertaCongestion?`<div class="alert">Cerca de capacidad de carga (RF-021)</div>`:"")+
- `<div class="ok">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
- detalle.dataset.id=id;
+async function verDetalle(id){
+ try{
+  const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
+  const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
+  if(!r.ok){showErr("detalleBox",d.error||"No se pudo cargar detalle");return}
+  el("detalleBox").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · promedio ${d.promedio}</small>`+
+  (d.alertaCongestion?`<div class="alert">Cerca de capacidad de carga (RF-021)</div>`:"")+
+  `<div class="ok">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
+  el("detalleBox").dataset.id=id;
+ }catch(e){showErr("detalleBox","No se pudo cargar detalle: "+e.message)}
 }
 async function pagarDemo(){
- const id=(document.getElementById("sid")||{}).textContent||detalle.dataset.id;
- if(!id){pago.innerHTML='<div class="err">Elige un servicio primero</div>';return}
- const f=fecha.value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
- const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:hora.value||null,personas:+personas.value||1})});
- const d=await r.json();
- pago.innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id}</div>`:`<div class="err">${d.error||"error"}</div>`;
+ try{
+  const sidEl=document.getElementById("sid");
+  const id=(sidEl&&sidEl.textContent)||el("detalleBox").dataset.id;
+  if(!id){el("pago").innerHTML='<div class="err">Elige un servicio primero (clic en una card)</div>';return}
+  const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
+  const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});
+  const d=await r.json();
+  el("pago").innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id}</div>`:`<div class="err">${d.error||"error"}</div>`;
+ }catch(e){showErr("pago","No se pudo pagar: "+e.message)}
 }
-async function mis(){const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();mis.innerHTML=d.map(x=>`#${x.id} ${x.estado} $${x.totalCop} ${x.fecha}`).join("<br>")}
-async function confirmar(){const r=await fetch(api+`/api/reservas/${c_id.value}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();conf.innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`}
+async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();el("mis").innerHTML=d.map(x=>`#${x.id} ${x.estado} $${x.totalCop} ${x.fecha}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
+async function confirmar(){try{const r=await fetch(api+`/api/reservas/${el("c-id").value}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
 async function crear(){
- const body={nombre:n_nombre.value,descripcion:"Creado en demo",categoria:n_cat.value,zona:n_zona.value,precioCop:+n_precio.value,tipo:n_tipo.value,cupoTotal:+n_cupo.value};
- const r=await fetch(api+"/api/prestador/servicios?prestadorId=2",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
- const d=await r.json();pre.innerHTML=r.ok?`<div class="ok">Creado #${d.id} ${d.nombre}</div>`:`<div class="err">${d.error}</div>`;mios();
+ try{
+  const body={nombre:el("n-nombre").value,descripcion:"Creado en demo",categoria:el("n-cat").value,zona:el("n-zona").value,precioCop:+el("n-precio").value,tipo:el("n-tipo").value,cupoTotal:+el("n-cupo").value};
+  const r=await fetch(api+"/api/prestador/servicios?prestadorId=2",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const d=await r.json();el("pre").innerHTML=r.ok?`<div class="ok">Creado #${d.id} ${d.nombre}</div>`:`<div class="err">${d.error}</div>`;mios();
+ }catch(e){showErr("pre","No se pudo crear: "+e.message)}
 }
 async function mios(){
- const r=await fetch(api+"/api/prestador/servicios?prestadorId=2");const d=await r.json();
- pre.innerHTML=d.map(s=>`<div class="card"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}<br><div class="row"><button class="ghost" onclick="toggle(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div></div>`).join("");
+ try{
+  const r=await fetch(api+"/api/prestador/servicios?prestadorId=2");const d=await r.json();
+  el("pre").innerHTML=d.map(s=>`<div class="card"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}<br><div class="row"><button class="ghost" onclick="toggleSrv(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div></div>`).join("");
+ }catch(e){showErr("pre","No se pudo cargar: "+e.message)}
 }
-async function toggle(id,hab){
- const r=await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar();
+async function toggleSrv(id,hab){
+ try{await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar()}catch(e){showErr("pre","No se pudo cambiar: "+e.message)}
 }
-fecha.value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();
+el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();
 </script>
 </body>
 </html>
