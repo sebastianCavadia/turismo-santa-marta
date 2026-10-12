@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Turismo Santa Marta — Demo (EXP + RES + pago demo + PRE)</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;margin:0;background:#f6f7f9;color:#222}
+header{background:#fff;border-bottom:1px solid #e3e6ea;padding:12px 20px;display:flex;gap:12px;align-items:center}
+header b{font-size:18px} .tag{background:#eef2ff;border:1px solid #c7d2fe;font-size:12px;padding:2px 8px;border-radius:20px}
+main{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;max-width:1200px;margin:auto}
+section{background:#fff;border:1px solid #e3e6ea;border-radius:12px;padding:14px}
+h2{margin:0 0 10px;font-size:16px} input,select,button{padding:8px;margin:4px 0;width:100%;box-sizing:border-box}
+button{background:#374151;color:#fff;border:0;border-radius:8px;cursor:pointer} button.ghost{background:#e5e7eb;color:#111}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.card{border:1px solid #e3e6ea;border-radius:10px;padding:10px;margin:8px 0;cursor:pointer}
+.alert{background:#fef3c7;border:1px solid #f59e0b;padding:8px;border-radius:8px;font-size:13px}
+.ok{background:#dcfce7;border:1px solid #22c55e;padding:8px;border-radius:8px;font-size:13px}
+.err{background:#fee2e2;border:1px solid #ef4444;padding:8px;border-radius:8px;font-size:13px}
+small{color:#666}
+</style>
+</head>
+<body>
+<header><b>Turismo Santa Marta</b><span class="tag">DEMO sin Wompi</span><span class="tag">ES/EN mock</span><span style="flex:1"></span><small>VIS anónimo explora · TUR reserva · PRE confirma/crea</small></header>
+<main>
+<section>
+<h2>1. Explorar (EXP1 — filtros como parámetros)</h2>
+<div class="row"><input id="q" placeholder="Buscar (ej. tayrona)"/><select id="zona"><option value="">Zona</option><option>Tayrona</option><option>Minca</option><option>Centro</option><option>Taganga</option></select></div>
+<div class="row"><select id="tipo"><option value="">Tipo</option><option>Actividad</option><option>Alojamiento</option></select><select id="sort"><option value="id">Orden: Relevancia</option><option value="precio">Precio</option></select></div>
+<button onclick="buscar()">Buscar</button>
+<div id="lista"></div>
+</section>
+<section>
+<h2>2. Detalle + Reservar y pagar demo (EXP2 + RES1 + PAG demo)</h2>
+<div id="detalle"><small>Elige un servicio de la lista.</small></div>
+<div class="row"><input id="fecha" type="date"/><input id="hora" type="time" value="14:00"/><input id="personas" type="number" value="2" min="1"/></div>
+<button onclick="pagarDemo()">Reservar y pagar demo (PAGADA instantánea)</button>
+<div id="pago"></div>
+<h2>Mis reservas</h2>
+<button class="ghost" onclick="mis()">Ver mis reservas (TUR id=1)</button>
+<div id="mis"></div>
+</section>
+<section>
+<h2>3. Soy Prestador (SER1-4 + RES4/5)</h2>
+<input id="n-nombre" placeholder="Nombre (ej. Mirador Sierra)"/>
+<div class="row"><select id="n-cat"><option>Naturaleza</option><option>Playa</option><option>Cultura</option><option>Aventura</option></select><input id="n-zona" placeholder="Zona" value="Minca"/></div>
+<div class="row"><input id="n-precio" type="number" value="90000"/><select id="n-tipo"><option>Actividad</option><option>Alojamiento</option></select><input id="n-cupo" type="number" value="10"/></div>
+<button onclick="crear()">Crear servicio (SER1)</button>
+<button class="ghost" onclick="mios()">Ver mis servicios</button>
+<div id="pre"></div>
+</section>
+<section>
+<h2>Confirmar como PRE (solo si PAGADA)</h2>
+<input id="c-id" placeholder="id reserva (ej. 1)"/>
+<button onclick="confirmar()">Confirmar reserva</button>
+<div id="conf"></div>
+<h2>Reglas demo</h2>
+<small>Sin PAGADA no hay CONFIRMADA (RF-105). Sin disponibilidad → 400 (RF-057). Borrado lógico respeta reservas. Sin PAN/CVV. Wompi real en C-2.</small>
+</section>
+</main>
+<script>
+const api="";
+async function buscar(){
+ const p=new URLSearchParams({size:20,q:q.value||"",zona:zona.value||"",tipo:tipo.value||"",sort:sort.value});
+ const r=await fetch(api+"/api/servicios?"+p); const d=await r.json();
+ lista.innerHTML=(d.content||[]).map(s=>`<div class="card" onclick="detalle(${s.id})"><b>${s.nombre}</b><br><small>${s.zona} · ${s.tipo} · COP $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}</small></div>`).join("")||"<small>Sin resultados</small>";
+}
+async function detalle(id){
+ const f=fecha.value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
+ const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
+ detalle.innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · promedio ${d.promedio}</small>`+
+ (d.alertaCongestion?`<div class="alert">Cerca de capacidad de carga (RF-021)</div>`:"")+
+ `<div class="ok">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
+ detalle.dataset.id=id;
+}
+async function pagarDemo(){
+ const id=(document.getElementById("sid")||{}).textContent||detalle.dataset.id;
+ if(!id){pago.innerHTML='<div class="err">Elige un servicio primero</div>';return}
+ const f=fecha.value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
+ const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:hora.value||null,personas:+personas.value||1})});
+ const d=await r.json();
+ pago.innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id}</div>`:`<div class="err">${d.error||"error"}</div>`;
+}
+async function mis(){const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();mis.innerHTML=d.map(x=>`#${x.id} ${x.estado} $${x.totalCop} ${x.fecha}`).join("<br>")}
+async function confirmar(){const r=await fetch(api+`/api/reservas/${c_id.value}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();conf.innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`}
+async function crear(){
+ const body={nombre:n_nombre.value,descripcion:"Creado en demo",categoria:n_cat.value,zona:n_zona.value,precioCop:+n_precio.value,tipo:n_tipo.value,cupoTotal:+n_cupo.value};
+ const r=await fetch(api+"/api/prestador/servicios?prestadorId=2",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+ const d=await r.json();pre.innerHTML=r.ok?`<div class="ok">Creado #${d.id} ${d.nombre}</div>`:`<div class="err">${d.error}</div>`;mios();
+}
+async function mios(){
+ const r=await fetch(api+"/api/prestador/servicios?prestadorId=2");const d=await r.json();
+ pre.innerHTML=d.map(s=>`<div class="card"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}<br><div class="row"><button class="ghost" onclick="toggle(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div></div>`).join("");
+}
+async function toggle(id,hab){
+ const r=await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar();
+}
+fecha.value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();
+</script>
+</body>
+</html>
