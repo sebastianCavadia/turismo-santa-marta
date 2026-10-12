@@ -1,0 +1,16 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/turismo_sm}
+    username: ${SPRING_DATASOURCE_USERNAME:turismo}
+    password: ${SPRING_DATASOURCE_PASSWORD:turismo123}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        default_schema: public
+prototipo:
+  pago-timeout-min: ${PAGO_TIMEOUT_MIN:5}

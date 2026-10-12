@@ -1,0 +1,46 @@
+package co.edu.unimagdalena.turismo.reservapago;
+
+import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
+import java.util.*;
+
+@RestController
+@RequestMapping("/api/reservas")
+public class ReservaController {
+  private final ReservaPagoService service;
+  private final ReservaRepository reservas;
+  private final PagoRepository pagos;
+
+  public ReservaController(ReservaPagoService s, ReservaRepository r, PagoRepository p) {
+    this.service = s; this.reservas = r; this.pagos = p;
+  }
+
+  public record PagarDemoReq(Long servicioId, Long turistaId, String fecha, String hora, int personas) {}
+
+  // Botón único demo: RES1 + PAG falso instantáneo
+  @PostMapping("/pagar-demo")
+  public Map<String, Object> pagarDemo(@RequestBody PagarDemoReq req) {
+    Reserva r = service.pagarDemo(req.servicioId(), req.turistaId(),
+      LocalDate.parse(req.fecha()), req.hora(), req.personas());
+    var p = pagos.findByReservaId(r.id).orElseThrow();
+    return Map.of("reserva", r, "pago", p,
+      "comprobante", Map.of("reference", p.reference, "estado", p.estado, "nota", "DEMO sin PAN/CVV"));
+  }
+
+  @PostMapping("/{id}/confirmar")
+  public Reserva confirmar(@PathVariable Long id, @RequestParam(defaultValue = "PRE") String rol) {
+    return service.confirmar(id, rol);
+  }
+
+  @GetMapping("/mis")
+  public List<Reserva> mis(@RequestParam(defaultValue = "1") Long turistaId) {
+    return reservas.findByTuristaIdOrderByIdDesc(turistaId);
+  }
+
+  @GetMapping("/{id}")
+  public Map<String, Object> detalle(@PathVariable Long id) {
+    var r = reservas.findById(id).orElseThrow();
+    var p = pagos.findByReservaId(id).orElse(null);
+    return Map.of("reserva", r, "pago", p == null ? Map.of() : p);
+  }
+}

@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: turismo-sm-db
+    environment:
+      POSTGRES_DB: turismo_sm
+      POSTGRES_USER: turismo
+      POSTGRES_PASSWORD: turismo123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    networks:
+      - turismo-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U turismo -d turismo_sm"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # App Spring Boot (monolito modular que finge microservicios con capas).
+  # Perfil demo con pago simulado.
+  app:
+    build: ./app
+    container_name: turismo-sm-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/turismo_sm
+      SPRING_DATASOURCE_USERNAME: turismo
+      SPRING_DATASOURCE_PASSWORD: turismo123
+      PAGO_TIMEOUT_MIN: 5
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - turismo-net
+
+volumes:
+  pgdata:
+
+networks:
+  turismo-net:
+    driver: bridge
