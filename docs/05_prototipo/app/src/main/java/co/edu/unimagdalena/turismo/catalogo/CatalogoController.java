@@ -46,7 +46,9 @@ public class CatalogoController {
     out.put("cuposLibres", libres);
     out.put("alertaCongestion", alerta); // EXP3 <<extend>> RF-021
     out.put("buenasPracticas", "Si es natural/ecológico: usa agua y energía con moderación"); // EXP4 RF-022/090
-    out.put("promedio", 4.5); // OPI2 RF-112 mock (opiniones en C-2)
+    out.put("promedio", null); // OPI2: sin reseñas en demo (opiniones solo FINALIZADA, C-2)
+    out.put("totalResenas", 0);
+    out.put("notaResenas", "Sin calificaciones todavía (opiniones en C-2)");
     return out;
   }
 

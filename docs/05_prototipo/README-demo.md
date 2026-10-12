@@ -3,14 +3,10 @@
 Alcance recortado: pago Wompi fuera. Botón único `POST /api/reservas/pagar-demo`
 crea `PENDIENTE_PAGO` y lo pasa a `PAGADA` en la misma transacción (reference `DEMO-uuid`,
 sin PAN/CVV, sin webhook/firma). En C-2 se reemplaza por `WompiProvider` (Adapter) sin tocar el núcleo.
-Trazabilidad: EXP1/EXP2 → `catalogo-service`, RES1/RES5 + PAG3 simulado → `reserva-pago-service`,
+Trazabilidad: EXP1/EXP2 → `catalogo-service`, RES1/RES4/RES5/RES6 + PAG3 simulado → `reserva-pago-service`,
 SER1-4 → `catalogo-service` (rol PRE).
-Web demo: `http://localhost:8080/` (explorar + detalle + pagar demo + prestador).
-
-Alcance recortado: pago Wompi fuera. Botón único `POST /api/reservas/pagar-demo`
-crea `PENDIENTE_PAGO` y lo pasa a `PAGADA` en la misma transacción (reference `DEMO-uuid`,
-sin PAN/CVV, sin webhook/firma). En C-2 se reemplaza por `WompiProvider` (Adapter) sin tocar el núcleo.
-Trazabilidad: EXP1/EXP2 → `catalogo-service`, RES1/RES5 + PAG3 simulado → `reserva-pago-service`.
+Web demo por tabs: `http://localhost:8080/` (Explorar VIS · Turista · Prestador, sin Gestor).
+Detalle sin promedio: `Sin calificaciones todavía (opiniones solo FINALIZADA, C-2)`.
 
 ## Correr
 
@@ -29,9 +25,11 @@ curl "http://localhost:8080/api/servicios/6?fecha=$FECHA"
 curl -X POST http://localhost:8080/api/reservas/pagar-demo \
  -H 'Content-Type: application/json' \
  -d "{\"servicioId\":6,\"turistaId\":1,\"fecha\":\"$FECHA\",\"hora\":\"14:00\",\"personas\":2}"
-# 3. Confirmar PRE (solo si PAGADA, RF-050/105)
+# 3. Confirmar PRE (solo si PAGADA, RF-050/105) o rechazar (RF-052, libera cupo + reembolso demo)
 curl -X POST http://localhost:8080/api/reservas/1/confirmar?rol=PRE
-# 4. Mis reservas + detalle/comprobante
+curl -X POST http://localhost:8080/api/reservas/1/rechazar?rol=PRE
+# 4. Reservas recibidas PRE (RES4 RF-048/049, PAGADA primero) + Mis reservas + detalle/comprobante
+curl "http://localhost:8080/api/prestador/reservas?prestadorId=2"
 curl "http://localhost:8080/api/reservas/mis?turistaId=1"
 curl http://localhost:8080/api/reservas/1
 ```
@@ -55,4 +53,4 @@ curl "http://localhost:8080/api/prestador/servicios?prestadorId=2"
 ```
 
 Fuera del prototipo: PAG1 redirect, PAG2 webhook/firma/idempotencia real, FALLIDA por timeout,
-reembolso RF-106, opiniones, IA (van en C-2).
+reembolso Wompi real RF-106 (demo marca REEMBOLSADO local), opiniones, IA (van en C-2).

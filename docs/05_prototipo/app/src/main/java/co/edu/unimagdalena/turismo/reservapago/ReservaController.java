@@ -32,6 +32,11 @@ public class ReservaController {
     return service.confirmar(id, rol);
   }
 
+  @PostMapping("/{id}/rechazar")
+  public Reserva rechazar(@PathVariable Long id, @RequestParam(defaultValue = "PRE") String rol) {
+    return service.rechazar(id, rol);
+  }
+
   @GetMapping("/mis")
   public List<Reserva> mis(@RequestParam(defaultValue = "1") Long turistaId) {
     return reservas.findByTuristaIdOrderByIdDesc(turistaId);

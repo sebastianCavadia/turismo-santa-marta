@@ -82,10 +82,10 @@ small{color:#666}
 <div id="pre"></div>
 </section>
 <section>
-<h2>Reservas recibidas + Confirmar (RES4/5 — solo si PAGADA)</h2>
-<div class="role-hint">RF-048..053, RF-050/105 · POST /api/reservas/{id}/confirmar?rol=PRE</div>
-<input id="c-id" placeholder="id reserva (ej. 1)"/>
-<button onclick="confirmar()">Confirmar reserva</button>
+<h2>Reservas recibidas + Confirmar (RES4/5/6 — solo si PAGADA)</h2>
+<div class="role-hint">RF-048..053, RF-050/105 · PAGADA primero · Confirmar/Rechazar sin copiar id</div>
+<button class="ghost" onclick="recibidas()">Ver reservas recibidas</button>
+<div id="rec"></div>
 <div id="conf"></div>
 <small>Sin PAGADA no hay CONFIRMADA. Sin disponibilidad → 400 (RF-057). Wompi real en C-2.</small>
 </section>
@@ -114,7 +114,7 @@ async function verDetalle(id){
   const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
   if(!r.ok){showErr("detalleBox",d.error||"No se pudo cargar detalle");return}
   el("preview").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop} <small>(ver tab Turista para reservar)</small>`;
-  el("detalleBox").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · promedio ${d.promedio}</small>`+
+  el("detalleBox").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · ${d.notaResenas||"Sin calificaciones todavía"}</small>`+
   (d.alertaCongestion?`<div class="alert">Cerca de capacidad de carga (RF-021)</div>`:"")+
   `<div class="ok">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
   el("detalleBox").dataset.id=id;
@@ -129,11 +129,13 @@ async function pagarDemo(){
   const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
   const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});
   const d=await r.json();
-  el("pago").innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id} (anota el # para confirmar como PRE)</div>`:`<div class="err">${d.error||"error"}</div>`;
+  el("pago").innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id} (ya visible en tab Prestador)</div>`:`<div class="err">${d.error||"error"}</div>`;
  }catch(e){showErr("pago","No se pudo pagar: "+e.message)}
 }
 async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();el("mis").innerHTML=d.map(x=>`#${x.id} ${x.estado} $${x.totalCop} ${x.fecha}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
-async function confirmar(){try{const r=await fetch(api+`/api/reservas/${el("c-id").value}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
+async function confirmarId(id){try{const r=await fetch(api+`/api/reservas/${id}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
+async function rechazarId(id){try{const r=await fetch(api+`/api/reservas/${id}/rechazar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">RECHAZADA #${d.id} (cupo liberado, reembolso demo)</div>`:`<div class="err">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo rechazar: "+e.message)}}
+async function recibidas(){try{const r=await fetch(api+"/api/prestador/reservas?prestadorId=2");const d=await r.json();el("rec").innerHTML=d.map(x=>`<div class="card"><b>#${x.id} ${x.servicio}</b> · ${x.fecha} · ${x.personas}p · $${x.totalCop} · <b>${x.estado}</b><br>${x.confirmable?`<div class="row"><button onclick="confirmarId(${x.id})">Confirmar</button><button class="ghost" onclick="rechazarId(${x.id})">Rechazar</button></div>`:"<small>No confirmable (ya CONFIRMADA/RECHAZADA/FINALIZADA)</small>"}</div>`).join("")||"<small>Sin reservas recibidas</small>"}catch(e){showErr("rec","No se pudo cargar: "+e.message)}}
 async function crear(){
  try{
   const body={nombre:el("n-nombre").value,descripcion:"Creado en demo",categoria:el("n-cat").value,zona:el("n-zona").value,precioCop:+el("n-precio").value,tipo:el("n-tipo").value,cupoTotal:+el("n-cupo").value};
@@ -150,7 +152,7 @@ async function mios(){
 async function toggleSrv(id,hab){
  try{await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar()}catch(e){showErr("pre","No se pudo cambiar: "+e.message)}
 }
-el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();
+el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();recibidas();
 </script>
 </body>
 </html>

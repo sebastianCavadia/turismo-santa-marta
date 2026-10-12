@@ -72,6 +72,30 @@ public class ReservaPagoService {
     return r;
   }
 
+  @Transactional
+  public Reserva rechazar(Long reservaId, String rol) {
+    if (!"PRE".equalsIgnoreCase(rol) && !"ADM".equalsIgnoreCase(rol))
+      throw new SecurityException("Solo PRE/ADM rechaza");
+    Reserva r = reservas.findById(reservaId).orElseThrow(() -> new IllegalArgumentException("Reserva no existe"));
+    if (!"PAGADA".equals(r.estado)) throw new IllegalStateException("Solo se rechaza si PAGADA (RF-052)");
+    r.estado = "RECHAZADA";
+    r = reservas.save(r);
+    audit("reserva", r.id, "PAGADA", "RECHAZADA", null);
+    // Libera cupo (RF-056/RF-073) + reembolso demo (RF-106 simulado, sin Wompi)
+    var d = disp.findByServicioIdAndFecha(r.servicioId, r.fecha).orElse(null);
+    if (d != null && d.cupoOcupado >= r.personas) {
+      d.cupoOcupado -= r.personas;
+      disp.save(d);
+    }
+    var p = pagos.findByReservaId(r.id).orElse(null);
+    if (p != null) {
+      p.estado = "REEMBOLSADO";
+      pagos.save(p);
+      audit("pago", p.id, "PAGADA", "REEMBOLSADO", null);
+    }
+    return r;
+  }
+
   private void audit(String entidad, Long id, String antes, String despues, Long user) {
     Auditoria a = new Auditoria();
     a.entidad = entidad; a.entidadId = id; a.accion = "cambio-estado";
