@@ -15,7 +15,7 @@ public class Reserva {
   public LocalDate fecha;
   public LocalTime hora;
   public Integer personas;
-  public String estado = "PENDIENTE_PAGO";
+  public String estado = "PENDIENTE"; // RF048 v3
   @Column(name = "total_cop")
   public Long totalCop;
   @Column(name = "creado_en")

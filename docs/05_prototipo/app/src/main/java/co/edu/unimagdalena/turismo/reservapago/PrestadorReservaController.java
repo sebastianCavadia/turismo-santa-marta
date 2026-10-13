@@ -4,15 +4,16 @@ import co.edu.unimagdalena.turismo.catalogo.ServicioRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
-// RES4: reservas recibidas por prestador (RF-048/049), PAGADA primero.
+// RES4: reservas recibidas por prestador (RF048/049 v3), PENDIENTE primero.
 @RestController
 @RequestMapping("/api/prestador/reservas")
 public class PrestadorReservaController {
   private final ReservaRepository reservas;
   private final ServicioRepository servicios;
+  private final PagoRepository pagos;
 
-  public PrestadorReservaController(ReservaRepository r, ServicioRepository s) {
-    this.reservas = r; this.servicios = s;
+  public PrestadorReservaController(ReservaRepository r, ServicioRepository s, PagoRepository p) {
+    this.reservas = r; this.servicios = s; this.pagos = p;
   }
 
   @GetMapping
@@ -30,7 +31,8 @@ public class PrestadorReservaController {
       m.put("personas", r.personas);
       m.put("totalCop", r.totalCop);
       m.put("estado", r.estado);
-      m.put("confirmable", "PAGADA".equals(r.estado));
+      m.put("confirmable", "PENDIENTE".equals(r.estado));
+      m.put("pagoEstado", pagos.findByReservaId(r.id).map(p -> p.estado).orElse("SIN_PAGO"));
       out.add(m);
     }
     out.sort((a, b) -> {

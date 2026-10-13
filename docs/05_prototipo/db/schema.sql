@@ -40,8 +40,8 @@ CREATE TABLE reservas.reserva (
   fecha DATE NOT NULL,
   hora TIME,
   personas INT NOT NULL CHECK (personas > 0),
-  estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE_PAGO'
-    CHECK (estado IN ('PENDIENTE_PAGO','PAGADA','CONFIRMADA','RECHAZADA','CANCELADA','EXPIRADA','FINALIZADA')),
+  estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+    CHECK (estado IN ('PENDIENTE','CONFIRMADA','RECHAZADA','CANCELADA','COMPLETADA')),
   total_cop BIGINT NOT NULL CHECK (total_cop >= 0),
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -50,8 +50,8 @@ CREATE TABLE reservas.pago (
   id BIGSERIAL PRIMARY KEY,
   reserva_id BIGINT UNIQUE NOT NULL REFERENCES reservas.reserva(id),
   reference VARCHAR(40) UNIQUE NOT NULL,
-  estado VARCHAR(20) NOT NULL DEFAULT 'PAGADA'
-    CHECK (estado IN ('PAGADA','FALLIDA','REEMBOLSADO')),
+  estado VARCHAR(20) NOT NULL DEFAULT 'EN_VERIFICACION'
+    CHECK (estado IN ('PAGADA','EN_VERIFICACION','FALLIDA','REEMBOLSADO')),
   modo VARCHAR(20) NOT NULL DEFAULT 'DEMO',
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -60,8 +60,8 @@ CREATE TABLE reservas.auditoria (
   entidad VARCHAR(40) NOT NULL,
   entidad_id BIGINT NOT NULL,
   accion VARCHAR(40) NOT NULL,
-  estado_antes VARCHAR(20),
-  estado_despues VARCHAR(20),
+  estado_antes VARCHAR(100),
+  estado_despues VARCHAR(100),
   usuario_id BIGINT,
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );

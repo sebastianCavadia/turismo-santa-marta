@@ -1,9 +1,12 @@
-# 05 — Prototipo funcional (CU_E + CU_RES + pago DEMO + SER PRE + web)
+# 05 — Prototipo funcional (CU_E + CU_RES + pago DEMO/COMPROBANTE + SER PRE + web)
 
-Alcance recortado: pago Wompi fuera. Botón único `POST /api/reservas/pagar-demo`
-crea `PENDIENTE_PAGO` y lo pasa a `PAGADA` en la misma transacción (reference `DEMO-uuid`,
-sin PAN/CVV, sin webhook/firma). En C-2 se reemplaza por `WompiProvider` (Adapter) sin tocar el núcleo.
-Trazabilidad: EXP1/EXP2 → `catalogo-service`, RES1/RES4/RES5/RES6 + PAG3 simulado → `reserva-pago-service`,
+Estados v3 RF048: PENDIENTE, CONFIRMADA, RECHAZADA, CANCELADA, COMPLETADA.
+Alcance recortado: pago Wompi fuera. Dos vías: botón único `POST /api/reservas/pagar-demo`
+(PENDIENTE + pago PAGADA mock en la misma transacción) o comprobante manual
+`POST /api/reservas/{id}/comprobante` + `POST /api/reservas/{id}/validar-pago?rol=PRE` (RF044).
+Confirmar solo PENDIENTE con pago aprobado (RF038/RF044). Cancelar con motivo (RF040),
+expiración PENDIENTE sin pago → CANCELADA 15min (RF056), COMPLETADA auto (RF049).
+Trazabilidad: EXP1/EXP2 → `catalogo-service`, RES1/RES4/RES5/RES6 + PAG mock → `reserva-pago-service`,
 SER1-4 → `catalogo-service` (rol PRE).
 Web demo por tabs: `http://localhost:8080/` (Explorar VIS · Turista · Prestador, sin Gestor).
 Detalle sin promedio: `Sin calificaciones todavía (opiniones solo FINALIZADA, C-2)`.
@@ -25,9 +28,12 @@ curl "http://localhost:8080/api/servicios/6?fecha=$FECHA"
 curl -X POST http://localhost:8080/api/reservas/pagar-demo \
  -H 'Content-Type: application/json' \
  -d "{\"servicioId\":6,\"turistaId\":1,\"fecha\":\"$FECHA\",\"hora\":\"14:00\",\"personas\":2}"
-# 3. Confirmar PRE (solo si PAGADA, RF-050/105) o rechazar (RF-052, libera cupo + reembolso demo)
+# 3. Confirmar PRE (solo PENDIENTE con pago aprobado, RF038/RF044), rechazar, validar comprobante o cancelar
 curl -X POST http://localhost:8080/api/reservas/1/confirmar?rol=PRE
 curl -X POST http://localhost:8080/api/reservas/1/rechazar?rol=PRE
+curl -X POST http://localhost:8080/api/reservas/1/comprobante -H 'Content-Type: application/json' -d '{"turistaId":1,"referencia":"TRANSF-123"}'
+curl -X POST "http://localhost:8080/api/reservas/1/validar-pago?rol=PRE"
+curl -X POST http://localhost:8080/api/reservas/1/cancelar -H 'Content-Type: application/json' -d '{"usuarioId":1,"motivo":"Cambio de planes"}'
 # 4. Reservas recibidas PRE (RES4 RF-048/049, PAGADA primero) + Mis reservas + detalle/comprobante
 curl "http://localhost:8080/api/prestador/reservas?prestadorId=2"
 curl "http://localhost:8080/api/reservas/mis?turistaId=1"

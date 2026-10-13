@@ -13,4 +13,4 @@ spring:
       hibernate:
         default_schema: public
 prototipo:
-  pago-timeout-min: ${PAGO_TIMEOUT_MIN:5}
+  pago-timeout-min: ${PAGO_TIMEOUT_MIN:15}

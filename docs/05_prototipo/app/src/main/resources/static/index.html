@@ -3,109 +3,135 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Turismo Santa Marta — Demo por actores</title>
+<title>SAMAR — Demo por actores</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{mar:{50:'#ecfeff',100:'#cffafe',500:'#06b6d4',700:'#0e7490',900:'#164e63'},arena:{100:'#fef3c7',200:'#fde68a'},coral:{500:'#f97316',600:'#ea580c'}},fontFamily:{sans:['Plus Jakarta Sans','system-ui','sans-serif']},boxShadow:{soft:'0 8px 30px rgba(2,132,199,.12)'}}}}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-body{font-family:system-ui,Arial,sans-serif;margin:0;background:#f6f7f9;color:#222}
-header{background:#fff;border-bottom:1px solid #e3e6ea;padding:12px 20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-header b{font-size:18px} .tag{background:#eef2ff;border:1px solid #c7d2fe;font-size:12px;padding:2px 8px;border-radius:20px}
-nav{display:flex;gap:8px;padding:12px 20px 0;max-width:1200px;margin:auto}
-nav button{flex:1;padding:12px;border:1px solid #e3e6ea;border-bottom:0;background:#e5e7eb;border-radius:10px 10px 0 0;font-weight:600}
-nav button.active{background:#fff}
-nav button.pre.active{background:#1f2937;color:#fff}
-main{max-width:1200px;margin:auto;padding:0 20px 20px}
-.panel{display:none;background:#fff;border:1px solid #e3e6ea;border-radius:0 0 12px 12px;padding:16px}
-.panel.active{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.panel.pre.active{border-top:3px solid #1f2937}
-section h2{margin:0 0 10px;font-size:15px} input,select,button{padding:8px;margin:4px 0;width:100%;box-sizing:border-box}
-button{background:#374151;color:#fff;border:0;border-radius:8px;cursor:pointer} button.ghost{background:#e5e7eb;color:#111}
-.stepper{max-width:1200px;margin:0 auto;padding:8px 20px;color:#555;font-size:13px}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.card{border:1px solid #e3e6ea;border-radius:10px;padding:10px;margin:8px 0;cursor:pointer;background:#fff}
-.alert{background:#fef3c7;border:1px solid #f59e0b;padding:8px;border-radius:8px;font-size:13px}
-.ok{background:#dcfce7;border:1px solid #22c55e;padding:8px;border-radius:8px;font-size:13px}
-.err{background:#fee2e2;border:1px solid #ef4444;padding:8px;border-radius:8px;font-size:13px}
-small{color:#666}
-.role-hint{font-size:12px;color:#555;background:#f3f4f6;border-radius:8px;padding:6px 10px;margin-bottom:10px}
-@media(max-width:800px){.panel.active{grid-template-columns:1fr}}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+.hero{background:linear-gradient(120deg,#164e63 0%,#0e7490 45%,#06b6d4 100%)}
+.cardimg{height:130px;display:flex;align-items:flex-end;justify-content:flex-start;color:#fff;font-size:40px;padding:10px;border-radius:14px 14px 0 0;background-size:cover;background-position:center}
+.cat-Playa{background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.45)),url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=60&auto=format&fit=crop')}
+.cat-Naturaleza{background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.45)),url('https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=60&auto=format&fit=crop')}
+.cat-Cultura{background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.45)),url('https://images.unsplash.com/photo-1568632234157-ce7aecd03d0d?w=600&q=60&auto=format&fit=crop')}
+.cat-Aventura{background-image:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.45)),url('https://images.unsplash.com/photo-1551632811-561732d1e306?w=600&q=60&auto=format&fit=crop')}
+.badge{font-size:11px;font-weight:700;padding:2px 10px;border-radius:999px}
+.b-PAGADA{background:#dcfce7;color:#166534;animation:pulse 1.6s infinite}
+.b-PENDIENTE{background:#fef3c7;color:#92400e}
+.b-EN_VERIFICACION{background:#fef3c7;color:#92400e}
+.b-PENDIENTE_PAGO{background:#fef3c7;color:#92400e}
+.b-CONFIRMADA{background:#dbeafe;color:#1e40af}
+.b-RECHAZADA{background:#fee2e2;color:#991b1b}
+.b-COMPLETADA{background:#dcfce7;color:#166534}
+.b-CANCELADA,.b-EXPIRADA,.b-FINALIZADA{background:#e5e7eb;color:#374151}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.tabbtn{transition:all .15s}
+.skel{background:linear-gradient(90deg,#e5e7eb 25%,#f3f4f6 50%,#e5e7eb 75%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:10px;height:90px}
+@keyframes sk{to{background-position:-200% 0}}
+input,select{color-scheme:light}
+:focus-visible{outline:3px solid #06b6d4;outline-offset:1px}
 </style>
 </head>
-<body>
-<header><b>Turismo Santa Marta</b><span class="tag">DEMO sin Wompi</span><span style="flex:1"></span><small>Un tab por actor · Gestor omitido (sin backend IND)</small></header>
-<div class="stepper">Explorar (VIS) → Detalle + Pagar demo (TUR) → Confirmar / Crear (PRE)</div>
-<nav>
-<button id="tab-explorar" class="active" onclick="tab('explorar')">Explorar · Visitante</button>
-<button id="tab-turista" onclick="tab('turista')">Soy Turista · Reservar</button>
-<button id="tab-pre" class="pre" onclick="tab('pre')">Soy Prestador</button>
+<body class="bg-slate-100 text-slate-800">
+<header class="hero text-white">
+<div class="max-w-6xl mx-auto px-5 py-8">
+<div class="flex items-center gap-3 flex-wrap">
+<div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-xl font-extrabold">S</div>
+<div><h1 class="text-2xl font-extrabold leading-tight tracking-tight">SAMAR</h1>
+<p class="text-cyan-100 text-sm">Naturaleza, cultura y aventura en el Caribe colombiano · <span class="bg-white/20 rounded-full px-2 py-0.5 text-xs font-bold">DEMO sin Wompi</span></p></div>
+</div>
+<div class="mt-3 text-cyan-100/90 text-xs font-semibold tracking-wide">EXPLORAR (VIS) → DETALLE + PAGAR DEMO (TUR) → CONFIRMAR / CREAR (PRE)</div>
+</div>
+</header>
+<nav class="max-w-6xl mx-auto px-5 -mt-5">
+<div class="grid grid-cols-3 gap-2">
+<button id="tab-explorar" onclick="tab('explorar')" class="tabbtn bg-white rounded-2xl shadow-soft px-4 py-3 font-bold text-sm ring-2 ring-cyan-500">Explorar · Visitante</button>
+<button id="tab-turista" onclick="tab('turista')" class="tabbtn bg-white rounded-2xl shadow-soft px-4 py-3 font-bold text-sm">Soy Turista · Reservar</button>
+<button id="tab-pre" onclick="tab('pre')" class="tabbtn bg-slate-900 text-white rounded-2xl shadow-soft px-4 py-3 font-bold text-sm">Soy Prestador</button>
+</div>
 </nav>
-<main>
-<div id="panel-explorar" class="panel active">
-<section>
-<h2>Buscar (EXP1 — filtros como parámetros)</h2>
-<div class="role-hint">VIS anónimo · RF-011..018, RF-023 · GET /api/servicios</div>
-<div class="row"><input id="q" placeholder="Buscar (ej. tayrona)"/><select id="zona"><option value="">Zona</option><option>Tayrona</option><option>Minca</option><option>Centro</option><option>Taganga</option></select></div>
-<div class="row"><select id="tipo"><option value="">Tipo</option><option>Actividad</option><option>Alojamiento</option></select><select id="sort"><option value="id">Orden: Relevancia</option><option value="precio">Precio</option></select></div>
-<button onclick="buscar()">Buscar</button>
-<div id="lista"></div>
-</section>
-<section>
-<h2>Vista previa</h2>
-<div class="role-hint">Clic en una card → abre el tab Turista con el detalle (EXP2 + alerta + promedio).</div>
-<div id="preview"><small>Sin selección.</small></div>
-</section>
+<main class="max-w-6xl mx-auto px-5 py-5">
+<div id="panel-explorar" class="panel">
+<div class="bg-white rounded-2xl shadow-soft p-4">
+<h2 class="font-extrabold">Buscar <span class="text-xs font-semibold text-slate-500">EXP1 · filtros como parámetros · RF-011..018</span></h2>
+<div class="grid md:grid-cols-4 gap-2 mt-2">
+<input id="q" placeholder="Buscar (ej. tayrona)" class="border rounded-xl px-3 py-2"/>
+<select id="zona" class="border rounded-xl px-3 py-2"><option value="">Zona</option><option>Tayrona</option><option>Minca</option><option>Centro</option><option>Taganga</option></select>
+<select id="tipo" class="border rounded-xl px-3 py-2"><option value="">Tipo</option><option>Actividad</option><option>Alojamiento</option></select>
+<select id="sort" class="border rounded-xl px-3 py-2"><option value="id">Relevancia</option><option value="precio">Precio</option></select>
 </div>
-<div id="panel-turista" class="panel">
-<section>
-<h2>Detalle (EXP2 + EXP3 + EXP4 + OPI2)</h2>
-<div class="role-hint">TUR · RF-019..021, RF-022/090, RF-112 · GET /api/servicios/{id}</div>
-<div id="detalleBox"><small>Elige un servicio en Explorar.</small></div>
-</section>
-<section>
-<h2>Reservar y pagar demo (RES1 + PAG demo + PAG3)</h2>
-<div class="role-hint">Botón único: PENDIENTE_PAGO → PAGADA instantánea · reference DEMO-xxx · sin PAN</div>
-<div class="row"><input id="fecha" type="date"/><input id="hora" type="time" value="14:00"/><input id="personas" type="number" value="2" min="1"/></div>
-<button onclick="pagarDemo()">Reservar y pagar demo</button>
-<div id="pago"></div>
-<h2>Mis reservas</h2>
-<button class="ghost" onclick="mis()">Ver mis reservas (TUR id=1)</button>
-<div id="mis"></div>
-</section>
+<button onclick="buscar()" class="mt-2 bg-mar-700 hover:bg-mar-900 text-white font-bold rounded-xl px-4 py-2.5 w-full">Buscar</button>
+<div id="lista" class="grid md:grid-cols-3 gap-3 mt-3"></div>
 </div>
-<div id="panel-pre" class="panel pre">
-<section>
-<h2>Mis servicios (SER1-4)</h2>
-<div class="role-hint">PRE · RF-059..064 · POST/PUT /api/prestador/servicios · borrado lógico</div>
-<input id="n-nombre" placeholder="Nombre (ej. Mirador Sierra)"/>
-<div class="row"><select id="n-cat"><option>Naturaleza</option><option>Playa</option><option>Cultura</option><option>Aventura</option></select><input id="n-zona" placeholder="Zona" value="Minca"/></div>
-<div class="row"><input id="n-precio" type="number" value="90000"/><select id="n-tipo"><option>Actividad</option><option>Alojamiento</option></select><input id="n-cupo" type="number" value="10"/></div>
-<button onclick="crear()">Crear servicio</button>
-<button class="ghost" onclick="mios()">Ver mis servicios</button>
-<div id="pre"></div>
-</section>
-<section>
-<h2>Reservas recibidas + Confirmar (RES4/5/6 — solo si PAGADA)</h2>
-<div class="role-hint">RF-048..053, RF-050/105 · PAGADA primero · Confirmar/Rechazar sin copiar id</div>
-<button class="ghost" onclick="recibidas()">Ver reservas recibidas</button>
-<div id="rec"></div>
-<div id="conf"></div>
-<small>Sin PAGADA no hay CONFIRMADA. Sin disponibilidad → 400 (RF-057). Wompi real en C-2.</small>
-</section>
+<div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 mt-3 text-sm" id="preview"><b>Vista previa:</b> clic en una card para ver el detalle en el tab Turista.</div>
+</div>
+<div id="panel-turista" class="panel hidden">
+<div class="grid md:grid-cols-2 gap-3">
+<div class="bg-white rounded-2xl shadow-soft p-4">
+<h2 class="font-extrabold">Detalle <span class="text-xs font-semibold text-slate-500">EXP2 + alerta + buenas prácticas + reseñas</span></h2>
+<div id="detalleBox" class="text-sm text-slate-600">Elige un servicio en Explorar.</div>
+</div>
+<div class="bg-white rounded-2xl shadow-soft p-4">
+<h2 class="font-extrabold">Reservar y pagar demo <span class="text-xs font-semibold text-slate-500">RES1 + PAG demo</span></h2>
+<div class="grid grid-cols-3 gap-2"><input id="fecha" type="date" class="border rounded-xl px-3 py-2"/><input id="hora" type="time" value="14:00" class="border rounded-xl px-3 py-2"/><input id="personas" type="number" value="2" min="1" class="border rounded-xl px-3 py-2"/></div>
+<button id="btnPagar" onclick="pagarDemo()" class="mt-2 bg-coral-500 hover:bg-coral-600 text-white font-extrabold rounded-xl px-4 py-3 w-full text-base">Reservar y pagar demo</button>
+<div id="pago" class="mt-2"></div>
+<h2 class="font-extrabold mt-3">Comprobante manual (RF044)</h2>
+<div class="grid grid-cols-2 gap-2"><input id="cp-id" placeholder="id reserva" class="border rounded-xl px-3 py-2"/><input id="cp-ref" placeholder="referencia transferencia" class="border rounded-xl px-3 py-2"/></div>
+<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="comprobante()">Adjuntar comprobante</button>
+<div id="cp" class="mt-2 text-sm"></div>
+<h2 class="font-extrabold mt-3">Cancelar (RF040, con motivo)</h2>
+<div class="grid grid-cols-2 gap-2"><input id="cx-id" placeholder="id reserva" class="border rounded-xl px-3 py-2"/><select id="cx-mot" class="border rounded-xl px-3 py-2"><option>Cambio de planes</option><option>Clima</option><option>Precio</option><option>Otro</option></select></div>
+<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="cancelar()">Cancelar reserva</button>
+<div id="cx" class="mt-2 text-sm"></div>
+<h2 class="font-extrabold mt-3">Mis reservas</h2>
+<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="mis()">Ver mis reservas (TUR id=1)</button>
+<div id="mis" class="mt-2 text-sm"></div>
+</div>
+</div>
+</div>
+<div id="panel-pre" class="panel hidden">
+<div class="grid md:grid-cols-2 gap-3">
+<div class="bg-slate-900 text-white rounded-2xl shadow-soft p-4">
+<h2 class="font-extrabold">Mis servicios <span class="text-xs font-semibold text-slate-300">SER1-4 · borrado lógico</span></h2>
+<input id="n-nombre" placeholder="Nombre (ej. Mirador Sierra)" class="text-slate-900 border rounded-xl px-3 py-2 w-full mt-1"/>
+<div class="grid grid-cols-2 gap-2 mt-1"><select id="n-cat" class="text-slate-900 border rounded-xl px-3 py-2"><option>Naturaleza</option><option>Playa</option><option>Cultura</option><option>Aventura</option></select><input id="n-zona" placeholder="Zona" value="Minca" class="text-slate-900 border rounded-xl px-3 py-2"/></div>
+<div class="grid grid-cols-3 gap-2 mt-1"><input id="n-precio" type="number" value="90000" class="text-slate-900 border rounded-xl px-3 py-2"/><select id="n-tipo" class="text-slate-900 border rounded-xl px-3 py-2"><option>Actividad</option><option>Alojamiento</option></select><input id="n-cupo" type="number" value="10" class="text-slate-900 border rounded-xl px-3 py-2"/></div>
+<button onclick="crear()" class="mt-2 bg-coral-500 hover:bg-coral-600 font-extrabold rounded-xl px-4 py-2.5 w-full">Crear servicio</button>
+<button class="mt-1 bg-white/10 hover:bg-white/20 font-bold rounded-xl px-4 py-2 w-full" onclick="mios()">Ver mis servicios</button>
+<div id="pre" class="mt-2"></div>
+</div>
+<div class="bg-white rounded-2xl shadow-soft p-4">
+<h2 class="font-extrabold">Reservas recibidas <span class="text-xs font-semibold text-slate-500">RES4/5/6 · PENDIENTE primero</span></h2>
+<p class="text-xs text-slate-500">Sin copiar ids: cada fila PENDIENTE trae sus botones.</p>
+<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="recibidas()">Ver reservas recibidas</button>
+<div id="rec" class="mt-2"></div>
+<div id="conf" class="mt-2"></div>
+</div>
+</div>
 </div>
 </main>
+<footer class="max-w-6xl mx-auto px-5 pb-8 text-xs text-slate-500">PENDIENTE solo se confirma con pago aprobado o validado (RF044) · Sin disponibilidad → 400 (RF034-nota) · Sin PAN · Wompi real en C-2 · Opiniones en C-2</footer>
 <script>
 const api="";
 const el=(id)=>document.getElementById(id);
-function showErr(box,msg){el(box).innerHTML=`<div class="err">${msg}</div>`}
+const sigla=c=>({Playa:'PLAYA',Naturaleza:'NAT',Cultura:'CULT',Aventura:'AVEN'}[c]||'SM');
+function showErr(box,msg){el(box).innerHTML=`<div class="bg-red-100 border border-red-400 text-red-800 rounded-xl p-2 text-sm">${msg}</div>`}
 function tab(name){
  for(const t of ["explorar","turista","pre"]){
-  el("tab-"+t).classList.toggle("active",t===name);
-  el("panel-"+t).classList.toggle("active",t===name);
+  el("panel-"+t).classList.toggle("hidden",t!==name);
+  const b=el("tab-"+t);
+  b.classList.toggle("ring-2",t===name);b.classList.toggle("ring-cyan-500",t===name);
  }
 }
 async function buscar(){
  try{
+  el("lista").innerHTML=`<div class="skel"></div><div class="skel"></div><div class="skel"></div>`;
   const p=new URLSearchParams({size:20,q:el("q").value||"",zona:el("zona").value||"",tipo:el("tipo").value||"",sort:el("sort").value});
   const r=await fetch(api+"/api/servicios?"+p); const d=await r.json();
-  el("lista").innerHTML=(d.content||[]).map(s=>`<div class="card" onclick="verDetalle(${s.id})"><b>${s.nombre}</b><br><small>${s.zona} · ${s.tipo} · COP $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}</small></div>`).join("")||"<small>Sin resultados</small>";
+  el("lista").innerHTML=(d.content||[]).map(s=>`<div class="border rounded-2xl overflow-hidden shadow-soft cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition" onclick="verDetalle(${s.id})"><div class="cardimg cat-${s.categoria}">${sigla(s.categoria)}</div><div class="p-3"><b>${s.nombre}</b><br><small class="text-slate-500">${s.zona} · ${s.tipo} · COP $${s.precioCop}</small> ${s.habilitado?"":'<span class="badge bg-slate-200">deshabilitado</span>'}</div></div>`).join("")||"<small>Sin resultados</small>";
  }catch(e){showErr("lista","No se pudo buscar: "+e.message)}
 }
 async function verDetalle(id){
@@ -113,45 +139,51 @@ async function verDetalle(id){
   const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
   const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
   if(!r.ok){showErr("detalleBox",d.error||"No se pudo cargar detalle");return}
-  el("preview").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop} <small>(ver tab Turista para reservar)</small>`;
-  el("detalleBox").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small>${d.fecha} · libres: ${d.cuposLibres} · ${d.notaResenas||"Sin calificaciones todavía"}</small>`+
-  (d.alertaCongestion?`<div class="alert">Cerca de capacidad de carga (RF-021)</div>`:"")+
-  `<div class="ok">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
+  el("preview").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop} <small>(abierto en tab Turista)</small>`;
+  el("detalleBox").innerHTML=`<div class="cardimg cat-${d.servicio.categoria} rounded-2xl mb-2">${sigla(d.servicio.categoria)}</div><b class="text-lg">${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small class="text-slate-500">${d.fecha} · libres: ${d.cuposLibres} · ${d.notaResenas||"Sin calificaciones todavía"}</small>`+
+  (d.alertaCongestion?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm mt-2">Cerca de capacidad de carga (RF-021)</div>`:"")+
+  `<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm mt-2">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
   el("detalleBox").dataset.id=id;
   tab("turista");
  }catch(e){showErr("detalleBox","No se pudo cargar detalle: "+e.message)}
 }
 async function pagarDemo(){
+ const btn=el("btnPagar");
  try{
   const sidEl=document.getElementById("sid");
   const id=(sidEl&&sidEl.textContent)||el("detalleBox").dataset.id;
-  if(!id){el("pago").innerHTML='<div class="err">Ve a Explorar y elige un servicio primero</div>';return}
+  if(!id){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Ve a Explorar y elige un servicio primero</div>';return}
+  btn.disabled=true;btn.textContent="Procesando pago demo…";
   const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
   const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});
   const d=await r.json();
-  el("pago").innerHTML=r.ok?`<div class="ok">PAGADA ${d.pago.reference} · total $${d.reserva.totalCop} · reserva #${d.reserva.id} (ya visible en tab Prestador)</div>`:`<div class="err">${d.error||"error"}</div>`;
+  el("pago").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-3 text-sm">Reserva #${d.reserva.id} <span class="badge b-PENDIENTE">PENDIENTE</span> · pago ${d.pago.reference} aprobado (mock) · total $${d.reserva.totalCop}<br><small>Falta confirmar como Prestador · Ya visible en tab Prestador</small></div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error||"error"}</div>`;
  }catch(e){showErr("pago","No se pudo pagar: "+e.message)}
+ finally{btn.disabled=false;btn.textContent="Reservar y pagar demo"}
 }
-async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();el("mis").innerHTML=d.map(x=>`#${x.id} ${x.estado} $${x.totalCop} ${x.fecha}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
-async function confirmarId(id){try{const r=await fetch(api+`/api/reservas/${id}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">CONFIRMADA #${d.id}</div>`:`<div class="err">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
-async function rechazarId(id){try{const r=await fetch(api+`/api/reservas/${id}/rechazar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="ok">RECHAZADA #${d.id} (cupo liberado, reembolso demo)</div>`:`<div class="err">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo rechazar: "+e.message)}}
-async function recibidas(){try{const r=await fetch(api+"/api/prestador/reservas?prestadorId=2");const d=await r.json();el("rec").innerHTML=d.map(x=>`<div class="card"><b>#${x.id} ${x.servicio}</b> · ${x.fecha} · ${x.personas}p · $${x.totalCop} · <b>${x.estado}</b><br>${x.confirmable?`<div class="row"><button onclick="confirmarId(${x.id})">Confirmar</button><button class="ghost" onclick="rechazarId(${x.id})">Rechazar</button></div>`:"<small>No confirmable (ya CONFIRMADA/RECHAZADA/FINALIZADA)</small>"}</div>`).join("")||"<small>Sin reservas recibidas</small>"}catch(e){showErr("rec","No se pudo cargar: "+e.message)}}
+async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId=1");const d=await r.json();el("mis").innerHTML=d.map(x=>`#${x.id} <span class="badge b-${x.estado}">${x.estado}</span> $${x.totalCop} ${x.fecha}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
+async function comprobante(){try{const r=await fetch(api+`/api/reservas/${el("cp-id").value}/comprobante`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({turistaId:1,referencia:el("cp-ref").value})});const d=await r.json();el("cp").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm">EN_VERIFICACION ${d.reference} (falta validar como PRE)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`}catch(e){showErr("cp","No se pudo adjuntar: "+e.message)}}
+async function cancelar(){try{const r=await fetch(api+`/api/reservas/${el("cx-id").value}/cancelar`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usuarioId:1,motivo:el("cx-mot").value})});const d=await r.json();el("cx").innerHTML=r.ok?`<div class="bg-slate-200 rounded-xl p-2 text-sm">CANCELADA #${d.id}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;mis();recibidas()}catch(e){showErr("cx","No se pudo cancelar: "+e.message)}}
+async function confirmarId(id){try{const r=await fetch(api+`/api/reservas/${id}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-blue-100 border border-blue-500 rounded-xl p-2 text-sm">CONFIRMADA #${d.id}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
+async function rechazarId(id){try{const r=await fetch(api+`/api/reservas/${id}/rechazar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">RECHAZADA #${d.id} (cupo liberado, reembolso demo)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo rechazar: "+e.message)}}
 async function crear(){
  try{
   const body={nombre:el("n-nombre").value,descripcion:"Creado en demo",categoria:el("n-cat").value,zona:el("n-zona").value,precioCop:+el("n-precio").value,tipo:el("n-tipo").value,cupoTotal:+el("n-cupo").value};
   const r=await fetch(api+"/api/prestador/servicios?prestadorId=2",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-  const d=await r.json();el("pre").innerHTML=r.ok?`<div class="ok">Creado #${d.id} ${d.nombre}</div>`:`<div class="err">${d.error}</div>`;mios();
+  const d=await r.json();el("pre").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm">Creado #${d.id} ${d.nombre}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;mios();
  }catch(e){showErr("pre","No se pudo crear: "+e.message)}
 }
 async function mios(){
  try{
   const r=await fetch(api+"/api/prestador/servicios?prestadorId=2");const d=await r.json();
-  el("pre").innerHTML=d.map(s=>`<div class="card"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":"(deshabilitado)"}<br><div class="row"><button class="ghost" onclick="toggleSrv(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div></div>`).join("");
+  el("pre").innerHTML=d.map(s=>`<div class="border rounded-xl p-2 mb-2"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":'<span class="badge bg-slate-200">deshabilitado</span>'}<br><button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-3 py-1 mt-1 w-full" onclick="toggleSrv(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div>`).join("");
  }catch(e){showErr("pre","No se pudo cargar: "+e.message)}
 }
 async function toggleSrv(id,hab){
  try{await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar()}catch(e){showErr("pre","No se pudo cambiar: "+e.message)}
 }
+async function recibidas(){try{const r=await fetch(api+"/api/prestador/reservas?prestadorId=2");const d=await r.json();el("rec").innerHTML=d.map(x=>`<div class="border rounded-xl p-2 mb-2"><b>#${x.id} ${x.servicio}</b> · ${x.fecha} · ${x.personas}p · $${x.totalCop} · <span class="badge b-${x.estado}">${x.estado}</span> <span class="badge bg-slate-200">${x.pagoEstado||""}</span><br>${x.confirmable?`<div class="grid grid-cols-3 gap-1 mt-1"><button class="bg-mar-700 text-white font-bold rounded-xl px-2 py-1" onclick="confirmarId(${x.id})">Confirmar</button><button class="bg-slate-200 font-bold rounded-xl px-2 py-1" onclick="rechazarId(${x.id})">Rechazar</button><button class="bg-amber-200 font-bold rounded-xl px-2 py-1" onclick="validarId(${x.id})">Validar pago</button></div>`:"<small class='text-slate-500'>No confirmable</small>"}</div>`).join("")||"<small>Sin reservas recibidas</small>"}catch(e){showErr("rec","No se pudo cargar: "+e.message)}}
+async function validarId(id){try{const r=await fetch(api+`/api/reservas/${id}/validar-pago?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm">Pago validado #${d.id} (sigue PENDIENTE, ahora confirmable)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo validar: "+e.message)}}
 el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();recibidas();
 </script>
 </body>

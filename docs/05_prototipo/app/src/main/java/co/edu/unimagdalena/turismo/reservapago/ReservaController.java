@@ -37,6 +37,25 @@ public class ReservaController {
     return service.rechazar(id, rol);
   }
 
+  public record CancelarReq(Long usuarioId, String motivo) {}
+
+  @PostMapping("/{id}/cancelar")
+  public Reserva cancelar(@PathVariable Long id, @RequestBody CancelarReq req) {
+    return service.cancelar(id, req.usuarioId(), req.motivo());
+  }
+
+  public record ComprobanteReq(Long turistaId, String referencia) {}
+
+  @PostMapping("/{id}/comprobante")
+  public Pago comprobante(@PathVariable Long id, @RequestBody ComprobanteReq req) {
+    return service.adjuntarComprobante(id, req.turistaId(), req.referencia());
+  }
+
+  @PostMapping("/{id}/validar-pago")
+  public Reserva validarPago(@PathVariable Long id, @RequestParam(defaultValue = "PRE") String rol) {
+    return service.validarPago(id, rol);
+  }
+
   @GetMapping("/mis")
   public List<Reserva> mis(@RequestParam(defaultValue = "1") Long turistaId) {
     return reservas.findByTuristaIdOrderByIdDesc(turistaId);
