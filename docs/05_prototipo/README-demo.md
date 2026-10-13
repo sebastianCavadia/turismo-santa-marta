@@ -71,7 +71,7 @@ curl "http://localhost:8080/api/prestador/servicios?prestadorId=2"
 ## Calificar (RF075/076/080/081 + RF030)
 
 ```bash
-# Solo COMPLETADA y 1x por reserva. COMPLETADA llega sola vía job cuando pasa la fecha.
+# Apenas se paga se puede calificar (prototipo; v3/RF076 exige COMPLETADA, se reactiva en C-2). 1x por reserva.
 curl -X POST http://localhost:8080/api/servicios/6/calificaciones \
  -H 'Content-Type: application/json' -d '{"turistaId":1,"reservaId":1,"estrellas":5,"texto":"Genial"}'
 curl "http://localhost:8080/api/servicios/6/calificaciones?estrellas=5"  # promedio + filtro

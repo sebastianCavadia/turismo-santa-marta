@@ -50,7 +50,7 @@ public class CatalogoController {
     out.put("promedio", califs.total(id) == 0 ? null : califs.promedio(id)); // RF080 real
     out.put("totalResenas", califs.total(id));
     out.put("notaResenas", califs.total(id) == 0
-      ? "Sin calificaciones todavía (solo COMPLETADA, 1x por reserva)"
+      ? "Sin calificaciones todavía (califica apenas pagues, 1x por reserva)"
       : "Promedio de " + califs.total(id) + " valoraciones");
     return out;
   }

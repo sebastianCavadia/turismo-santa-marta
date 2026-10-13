@@ -1,18 +1,21 @@
 package co.edu.unimagdalena.turismo.catalogo;
 
+import co.edu.unimagdalena.turismo.reservapago.PagoRepository;
 import co.edu.unimagdalena.turismo.reservapago.ReservaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
-// RF075/076/080/081 + RF030: calificar 1-5 solo COMPLETADA 1x, promedio real, responder PRE.
+// RF075/080/081 + RF030. Prototipo: se califica con PAGO APROBADO (apenas se pague),
+// 1x por reserva. v3/RF076 exige COMPLETADA: se reactiva por config en C-2.
 @Service
 public class CalificacionService {
   private final CalificacionRepository califs;
   private final ReservaRepository reservas;
+  private final PagoRepository pagos;
 
-  public CalificacionService(CalificacionRepository c, ReservaRepository r) {
-    this.califs = c; this.reservas = r;
+  public CalificacionService(CalificacionRepository c, ReservaRepository r, PagoRepository p) {
+    this.califs = c; this.reservas = r; this.pagos = p;
   }
 
   @Transactional
@@ -22,8 +25,8 @@ public class CalificacionService {
     if (!r.servicioId.equals(servicioId)) throw new IllegalArgumentException("La reserva no es de ese servicio");
     if (!r.turistaId.equals(turistaId != null ? turistaId : 1L))
       throw new SecurityException("Solo quien reservó califica");
-    if (!"COMPLETADA".equals(r.estado))
-      throw new IllegalStateException("Solo con reserva COMPLETADA (RF076)");
+    boolean pagada = pagos.findByReservaId(reservaId).map(p -> "PAGADA".equals(p.estado)).orElse(false);
+    if (!pagada) throw new IllegalStateException("Califica cuando el pago esté aprobado (demo: apenas pagues)");
     if (califs.existsByReservaId(reservaId))
       throw new IllegalStateException("Una calificación por reserva (RF076)");
     Calificacion c = new Calificacion();
