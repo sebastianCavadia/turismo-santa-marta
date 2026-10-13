@@ -68,5 +68,16 @@ curl -X POST http://localhost:8080/api/prestador/servicios/8/habilitar
 curl "http://localhost:8080/api/prestador/servicios?prestadorId=2"
 ```
 
+## Calificar (RF075/076/080/081 + RF030)
+
+```bash
+# Solo COMPLETADA y 1x por reserva. COMPLETADA llega sola vía job cuando pasa la fecha.
+curl -X POST http://localhost:8080/api/servicios/6/calificaciones \
+ -H 'Content-Type: application/json' -d '{"turistaId":1,"reservaId":1,"estrellas":5,"texto":"Genial"}'
+curl "http://localhost:8080/api/servicios/6/calificaciones?estrellas=5"  # promedio + filtro
+curl -X POST http://localhost:8080/api/servicios/6/calificaciones/1/responder \
+ -H 'Content-Type: application/json' -d '{"rol":"PRE","texto":"Gracias por visitarnos"}'
+```
+
 Fuera del prototipo: PAG1 redirect, PAG2 webhook/firma/idempotencia real, FALLIDA por timeout,
 reembolso Wompi real RF-106 (demo marca REEMBOLSADO local), opiniones, IA (van en C-2).

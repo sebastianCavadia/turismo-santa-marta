@@ -10,9 +10,10 @@ import java.util.*;
 public class CatalogoController {
   private final ServicioRepository servicios;
   private final DisponibilidadRepository disp;
+  private final CalificacionService califs;
 
-  public CatalogoController(ServicioRepository s, DisponibilidadRepository d) {
-    this.servicios = s; this.disp = d;
+  public CatalogoController(ServicioRepository s, DisponibilidadRepository d, CalificacionService c) {
+    this.servicios = s; this.disp = d; this.califs = c;
   }
 
   // EXP1: buscar, filtrar y ordenar (filtros como parámetros, no CU separado)
@@ -46,9 +47,11 @@ public class CatalogoController {
     out.put("cuposLibres", libres);
     out.put("alertaCongestion", alerta); // EXP3 <<extend>> RF-021
     out.put("buenasPracticas", "Si es natural/ecológico: usa agua y energía con moderación"); // EXP4 RF-022/090
-    out.put("promedio", null); // OPI2: sin reseñas en demo (opiniones solo FINALIZADA, C-2)
-    out.put("totalResenas", 0);
-    out.put("notaResenas", "Sin calificaciones todavía (opiniones en C-2)");
+    out.put("promedio", califs.total(id) == 0 ? null : califs.promedio(id)); // RF080 real
+    out.put("totalResenas", califs.total(id));
+    out.put("notaResenas", califs.total(id) == 0
+      ? "Sin calificaciones todavía (solo COMPLETADA, 1x por reserva)"
+      : "Promedio de " + califs.total(id) + " valoraciones");
     return out;
   }
 

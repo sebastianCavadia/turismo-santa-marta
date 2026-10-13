@@ -33,6 +33,18 @@ CREATE TABLE catalogo.zona_capacidad (
   capacidad INT NOT NULL CHECK (capacidad > 0)
 );
 
+-- Calificaciones: solo COMPLETADA, 1x por reserva (RF075/076), promedio real (RF080)
+CREATE TABLE catalogo.calificacion (
+  id BIGSERIAL PRIMARY KEY,
+  servicio_id BIGINT NOT NULL REFERENCES catalogo.servicio(id),
+  turista_id BIGINT NOT NULL,
+  reserva_id BIGINT UNIQUE NOT NULL,
+  estrellas INT NOT NULL CHECK (estrellas BETWEEN 1 AND 5),
+  texto TEXT,
+  respuesta_prestador TEXT,
+  creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Reservas + pago simulado
 CREATE TABLE reservas.reserva (
   id BIGSERIAL PRIMARY KEY,
