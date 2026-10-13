@@ -17,6 +17,13 @@ public class ReservaController {
 
   public record PagarDemoReq(Long servicioId, Long turistaId, String fecha, String hora, int personas) {}
 
+  // RF036: solicitar sin pagar (luego mock o comprobante RF044)
+  @PostMapping("/solicitar")
+  public Reserva solicitar(@RequestBody PagarDemoReq req) {
+    return service.solicitar(req.servicioId(), req.turistaId(),
+      LocalDate.parse(req.fecha()), req.hora(), req.personas());
+  }
+
   // Botón único demo: RES1 + PAG falso instantáneo
   @PostMapping("/pagar-demo")
   public Map<String, Object> pagarDemo(@RequestBody PagarDemoReq req) {

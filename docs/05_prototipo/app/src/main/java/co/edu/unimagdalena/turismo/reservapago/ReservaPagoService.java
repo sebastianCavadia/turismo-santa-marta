@@ -26,6 +26,34 @@ public class ReservaPagoService {
     this.notificaciones = n;
   }
 
+    // RF036: solicitud PENDIENTE sin pago (luego mock o comprobante RF044).
+  @Transactional
+  public Reserva solicitar(Long servicioId, Long turistaId, LocalDate fecha, String hora, int personas) {
+    var s = servicios.findById(servicioId).orElseThrow(() -> new IllegalArgumentException("Servicio no existe"));
+    if (personas <= 0) throw new IllegalArgumentException("Personas debe ser > 0");
+    if (fecha == null || fecha.isBefore(LocalDate.now()))
+      throw new IllegalArgumentException("Fecha inválida: no se reservan fechas pasadas (RF066)");
+    var d = disp.findByServicioIdAndFecha(servicioId, fecha)
+      .orElseThrow(() -> new IllegalArgumentException("Sin disponibilidad para esa fecha"));
+    if (Boolean.TRUE.equals(d.bloqueado)) throw new IllegalStateException("Fecha bloqueada");
+    if (d.cuposLibres() < personas) throw new IllegalStateException("Sin disponibilidad suficiente (RF-057)");
+    Reserva r = new Reserva();
+    r.servicioId = servicioId;
+    r.turistaId = turistaId != null ? turistaId : 1L;
+    r.fecha = fecha;
+    r.hora = (hora == null || hora.isBlank()) ? null : java.time.LocalTime.parse(hora);
+    r.personas = personas;
+    r.estado = "PENDIENTE";
+    r.totalCop = s.precioCop * personas;
+    r = reservas.save(r);
+    audit("reserva", r.id, null, "PENDIENTE", r.turistaId);
+    d.cupoOcupado += personas;
+    disp.save(d);
+    notificaciones.notificar(s.prestadorId, "RESERVA_NUEVA",
+      "Nueva solicitud #" + r.id + " en " + s.nombre + " (correo real en C-2)");
+    return r;
+  }
+
   @Transactional
   public Reserva pagarDemo(Long servicioId, Long turistaId, LocalDate fecha, String hora, int personas) {
     var s = servicios.findById(servicioId).orElseThrow(() -> new IllegalArgumentException("Servicio no existe"));
