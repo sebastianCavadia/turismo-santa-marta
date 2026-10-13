@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>SAMAR — Demo por actores</title>
+<title>SAMAR — Demo flujo principal</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config={theme:{extend:{colors:{mar:{50:'#ecfeff',100:'#cffafe',500:'#06b6d4',700:'#0e7490',900:'#164e63'},arena:{100:'#fef3c7',200:'#fde68a'},coral:{500:'#f97316',600:'#ea580c'}},fontFamily:{sans:['Plus Jakarta Sans','system-ui','sans-serif']},boxShadow:{soft:'0 8px 30px rgba(2,132,199,.12)'}}}}
@@ -21,11 +21,10 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 .b-PAGADA{background:#dcfce7;color:#166534;animation:pulse 1.6s infinite}
 .b-PENDIENTE{background:#fef3c7;color:#92400e}
 .b-EN_VERIFICACION{background:#fef3c7;color:#92400e}
-.b-PENDIENTE_PAGO{background:#fef3c7;color:#92400e}
 .b-CONFIRMADA{background:#dbeafe;color:#1e40af}
 .b-RECHAZADA{background:#fee2e2;color:#991b1b}
 .b-COMPLETADA{background:#dcfce7;color:#166534}
-.b-CANCELADA,.b-EXPIRADA,.b-FINALIZADA{background:#e5e7eb;color:#374151}
+.b-CANCELADA{background:#e5e7eb;color:#374151}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.65}}
 .tabbtn{transition:all .15s}
 .skel{background:linear-gradient(90deg,#e5e7eb 25%,#f3f4f6 50%,#e5e7eb 75%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:10px;height:90px}
@@ -40,24 +39,22 @@ input,select{color-scheme:light}
 <div class="flex items-center gap-3 flex-wrap">
 <div class="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center text-xl font-extrabold">S</div>
 <div><h1 class="text-2xl font-extrabold leading-tight tracking-tight">SAMAR</h1>
-<p class="text-cyan-100 text-sm">Naturaleza, cultura y aventura en el Caribe colombiano · <span class="bg-white/20 rounded-full px-2 py-0.5 text-xs font-bold">DEMO sin Wompi</span></p></div>
+<p class="text-cyan-100 text-sm">Consulta, reserva y paga servicios turísticos en Santa Marta · <span class="bg-white/20 rounded-full px-2 py-0.5 text-xs font-bold">DEMO</span></p></div>
 </div>
-<div class="mt-3 text-cyan-100/90 text-xs font-semibold tracking-wide">CUENTA → EXPLORAR (VIS) → PAGAR DEMO (TUR) → CONFIRMAR / CREAR (PRE) → VALIDAR (ADM)</div>
+<div class="mt-3 text-cyan-100/90 text-xs font-semibold tracking-wide">1 EXPLORAR → 2 RESERVAR Y PAGAR → 3 PRESTADOR CONFIRMA Y CREA</div>
 </div>
 </header>
 <nav class="max-w-6xl mx-auto px-5 -mt-5">
-<div class="grid grid-cols-5 gap-2">
-<button id="tab-explorar" onclick="tab('explorar')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-xs ring-2 ring-cyan-500">Explorar</button>
-<button id="tab-turista" onclick="tab('turista')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-xs">Turista</button>
-<button id="tab-pre" onclick="tab('pre')" class="tabbtn bg-slate-900 text-white rounded-2xl shadow-soft px-2 py-3 font-bold text-xs">Prestador</button>
-<button id="tab-cuenta" onclick="tab('cuenta')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-xs">Cuenta</button>
-<button id="tab-admin" onclick="tab('admin')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-xs">Admin</button>
+<div class="grid grid-cols-3 gap-2">
+<button id="tab-explorar" onclick="tab('explorar')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-sm ring-2 ring-cyan-500">1 · Explorar</button>
+<button id="tab-turista" onclick="tab('turista')" class="tabbtn bg-white rounded-2xl shadow-soft px-2 py-3 font-bold text-sm">2 · Reservar</button>
+<button id="tab-pre" onclick="tab('pre')" class="tabbtn bg-slate-900 text-white rounded-2xl shadow-soft px-2 py-3 font-bold text-sm">3 · Prestador</button>
 </div>
 </nav>
 <main class="max-w-6xl mx-auto px-5 py-5">
 <div id="panel-explorar" class="panel active">
 <div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Buscar <span class="text-xs font-semibold text-slate-500">EXP1 · filtros como parámetros · RF-011..018</span></h2>
+<h2 class="font-extrabold">Buscar servicios y atractivos</h2>
 <div class="grid md:grid-cols-4 gap-2 mt-2">
 <input id="q" placeholder="Buscar (ej. tayrona)" class="border rounded-xl px-3 py-2"/>
 <select id="zona" class="border rounded-xl px-3 py-2"><option value="">Zona</option><option>Tayrona</option><option>Minca</option><option>Centro</option><option>Taganga</option></select>
@@ -67,31 +64,31 @@ input,select{color-scheme:light}
 <button onclick="buscar()" class="mt-2 bg-mar-700 hover:bg-mar-900 text-white font-bold rounded-xl px-4 py-2.5 w-full">Buscar</button>
 <div id="lista" class="grid md:grid-cols-3 gap-3 mt-3"></div>
 </div>
-<div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 mt-3 text-sm" id="preview"><b>Vista previa:</b> clic en una card para ver el detalle en el tab Turista.</div>
+<div class="bg-cyan-50 border border-cyan-200 rounded-2xl p-3 mt-3 text-sm" id="preview"><b>Vista previa:</b> clic en una card para ver el detalle en Reservar.</div>
 </div>
 <div id="panel-turista" class="panel hidden">
 <div class="grid md:grid-cols-2 gap-3">
 <div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Detalle <span class="text-xs font-semibold text-slate-500">EXP2 + alerta + buenas prácticas + reseñas</span></h2>
+<h2 class="font-extrabold">Detalle del servicio</h2>
 <div id="detalleBox" class="text-sm text-slate-600">Elige un servicio en Explorar.</div>
 </div>
 <div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Reservar y pagar demo <span class="text-xs font-semibold text-slate-500">RES1 + PAG demo</span></h2>
+<h2 class="font-extrabold">Reservar y pagar</h2>
 <div class="grid grid-cols-3 gap-2"><input id="fecha" type="date" class="border rounded-xl px-3 py-2"/><input id="hora" type="time" value="14:00" class="border rounded-xl px-3 py-2"/><input id="personas" type="number" value="2" min="1" class="border rounded-xl px-3 py-2"/></div>
-<label class="text-xs text-slate-600 flex items-center gap-2 mt-1"><input id="pol" type="checkbox" class="w-4" style="width:auto"/> Acepto la política de cancelación (RF042: cancela sin penalización dentro del plazo mostrado)</label>
+<label class="text-xs text-slate-600 flex items-center gap-2 mt-1"><input id="pol" type="checkbox" class="w-4" style="width:auto"/> Acepto la política de cancelación (cancela sin penalización dentro del plazo)</label>
 <button id="btnPagar" onclick="pagarDemo()" class="mt-2 bg-coral-500 hover:bg-coral-600 text-white font-extrabold rounded-xl px-4 py-3 w-full text-base">Reservar y pagar demo</button>
-<button class="mt-1 bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="solicitar()">Solo reservar (pago después con comprobante RF044)</button>
+<button class="mt-1 bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="solicitar()">Solo reservar (pago después con comprobante)</button>
 <div id="pago" class="mt-2"></div>
-<h2 class="font-extrabold mt-3">Comprobante manual (RF044)</h2>
-<div class="grid grid-cols-2 gap-2"><input id="cp-id" placeholder="id reserva" class="border rounded-xl px-3 py-2"/><input id="cp-ref" placeholder="referencia transferencia" class="border rounded-xl px-3 py-2"/></div>
+<h2 class="font-extrabold mt-3">Comprobante de transferencia</h2>
+<div class="grid grid-cols-2 gap-2"><input id="cp-id" placeholder="id reserva" class="border rounded-xl px-3 py-2"/><input id="cp-ref" placeholder="referencia" class="border rounded-xl px-3 py-2"/></div>
 <button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="comprobante()">Adjuntar comprobante</button>
 <div id="cp" class="mt-2 text-sm"></div>
-<h2 class="font-extrabold mt-3">Cancelar (RF040, con motivo)</h2>
+<h2 class="font-extrabold mt-3">Cancelar con motivo</h2>
 <div class="grid grid-cols-2 gap-2"><input id="cx-id" placeholder="id reserva" class="border rounded-xl px-3 py-2"/><select id="cx-mot" class="border rounded-xl px-3 py-2"><option>Cambio de planes</option><option>Clima</option><option>Precio</option><option>Otro</option></select></div>
 <button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="cancelar()">Cancelar reserva</button>
 <div id="cx" class="mt-2 text-sm"></div>
 <h2 class="font-extrabold mt-3">Mis reservas</h2>
-<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="mis()">Ver mis reservas (TUR id=1)</button>
+<button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="mis()">Ver mis reservas</button>
 <div id="mis" class="mt-2 text-sm"></div>
 </div>
 </div>
@@ -99,8 +96,7 @@ input,select{color-scheme:light}
 <div id="panel-pre" class="panel hidden">
 <div class="grid md:grid-cols-2 gap-3">
 <div class="bg-slate-900 text-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Mis servicios <span class="text-xs font-semibold text-slate-300">SER1-4 · borrado lógico</span></h2>
-<div id="pre-ses" class="text-xs text-slate-300 mb-1"></div>
+<h2 class="font-extrabold">Crear servicio</h2>
 <input id="n-nombre" placeholder="Nombre (ej. Mirador Sierra)" class="text-slate-900 border rounded-xl px-3 py-2 w-full mt-1"/>
 <div class="grid grid-cols-2 gap-2 mt-1"><select id="n-cat" class="text-slate-900 border rounded-xl px-3 py-2"><option>Naturaleza</option><option>Playa</option><option>Cultura</option><option>Aventura</option></select><input id="n-zona" placeholder="Zona" value="Minca" class="text-slate-900 border rounded-xl px-3 py-2"/></div>
 <div class="grid grid-cols-3 gap-2 mt-1"><input id="n-precio" type="number" value="90000" class="text-slate-900 border rounded-xl px-3 py-2"/><select id="n-tipo" class="text-slate-900 border rounded-xl px-3 py-2"><option>Actividad</option><option>Alojamiento</option></select><input id="n-cupo" type="number" value="10" class="text-slate-900 border rounded-xl px-3 py-2"/></div>
@@ -109,54 +105,23 @@ input,select{color-scheme:light}
 <div id="pre" class="mt-2"></div>
 </div>
 <div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Reservas recibidas <span class="text-xs font-semibold text-slate-500">RES4/5/6 · PENDIENTE primero</span></h2>
-<p class="text-xs text-slate-500">Sin copiar ids: cada fila PENDIENTE trae sus botones.</p>
+<h2 class="font-extrabold">Reservas recibidas <span class="text-xs font-semibold text-slate-500">PENDIENTE primero</span></h2>
+<p class="text-xs text-slate-500">Cada fila PENDIENTE trae sus botones, sin copiar ids.</p>
 <button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-4 py-2 w-full" onclick="recibidas()">Ver reservas recibidas</button>
 <div id="rec" class="mt-2"></div>
 <div id="conf" class="mt-2"></div>
 </div>
 </div>
-<div id="panel-cuenta" class="panel hidden">
-<div class="grid md:grid-cols-2 gap-3">
-<div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Registro <span class="text-xs font-semibold text-slate-500">RF001-003 · por tipo</span></h2>
-<select id="r-tipo" class="border rounded-xl px-3 py-2 w-full" onchange="camposTipo()"><option value="TURISTA">Turista</option><option value="HOTEL">Hotel</option><option value="RESTAURANTE">Restaurante</option><option value="AGENCIA">Agencia</option></select>
-<div class="grid grid-cols-2 gap-2 mt-1"><input id="r-nombre" placeholder="Nombre" class="border rounded-xl px-3 py-2"/><input id="r-correo" placeholder="Correo" class="border rounded-xl px-3 py-2"/></div>
-<input id="r-pass" type="password" placeholder="Contraseña (BCrypt RF009)" class="border rounded-xl px-3 py-2 w-full mt-1"/>
-<div id="r-tur" class="grid grid-cols-2 gap-2 mt-1"><input id="r-tdoc" placeholder="Tipo doc CC/CE" class="border rounded-xl px-3 py-2"/><input id="r-ndoc" placeholder="Número doc" class="border rounded-xl px-3 py-2"/><input id="r-nac" placeholder="Nacionalidad" class="border rounded-xl px-3 py-2"/><input id="r-pais" placeholder="País residencia" class="border rounded-xl px-3 py-2"/></div>
-<div id="r-pre" class="hidden grid grid-cols-2 gap-2 mt-1"><input id="r-nit" placeholder="NIT" class="border rounded-xl px-3 py-2"/><input id="r-rnt" placeholder="RNT" class="border rounded-xl px-3 py-2"/><input id="r-ubi" placeholder="Ubicación" class="border rounded-xl px-3 py-2"/><input id="r-idi" placeholder="Idiomas guía" class="border rounded-xl px-3 py-2"/></div>
-<button onclick="registro()" class="mt-2 bg-mar-700 text-white font-bold rounded-xl px-4 py-2.5 w-full">Registrarme</button>
-<div id="reg" class="mt-2 text-sm"></div>
-</div>
-<div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Login <span class="text-xs font-semibold text-slate-500">RF004-006 · bloqueo 5min/5 intentos</span></h2>
-<input id="l-correo" placeholder="Correo" class="border rounded-xl px-3 py-2 w-full"/><input id="l-pass" type="password" placeholder="Contraseña" class="border rounded-xl px-3 py-2 w-full mt-1"/>
-<button onclick="login()" class="mt-2 bg-mar-700 text-white font-bold rounded-xl px-4 py-2.5 w-full">Entrar</button>
-<button class="mt-1 bg-slate-200 font-bold rounded-xl px-4 py-2 w-full" onclick="logout()">Cerrar sesión</button>
-<div id="ses" class="mt-2 text-sm"></div>
-<h2 class="font-extrabold mt-3">Notificaciones mock <span class="text-xs font-semibold text-slate-500">correo real en C-2</span></h2>
-<button class="bg-slate-200 font-bold rounded-xl px-4 py-2 w-full" onclick="notis()">Ver mis notificaciones</button>
-<div id="not" class="mt-2 text-sm"></div>
-</div>
-</div>
-</div>
-<div id="panel-admin" class="panel hidden">
-<div class="bg-white rounded-2xl shadow-soft p-4">
-<h2 class="font-extrabold">Validar prestadores <span class="text-xs font-semibold text-slate-500">RF095 · sin validar no son públicos RF085</span></h2>
-<button class="bg-slate-200 font-bold rounded-xl px-4 py-2 w-full" onclick="pendientes()">Ver pendientes</button>
-<div id="pen" class="mt-2"></div>
-<div id="val" class="mt-2 text-sm"></div>
-</div>
 </div>
 </main>
-<footer class="max-w-6xl mx-auto px-5 pb-8 text-xs text-slate-500">PENDIENTE solo se confirma con pago aprobado o validado (RF044) · Sin disponibilidad → 400 (RF034-nota) · Sin PAN · Wompi real en C-2 · Opiniones en C-2</footer>
+<footer class="max-w-6xl mx-auto px-5 pb-8 text-xs text-slate-500">Demo: pago mock instantáneo o comprobante validado por el prestador · Sin datos de tarjeta · Solo se confirma con pago aprobado</footer>
 <script>
 const api="";
 const el=(id)=>document.getElementById(id);
 const sigla=c=>({Playa:'PLAYA',Naturaleza:'NAT',Cultura:'CULT',Aventura:'AVEN'}[c]||'SM');
 function showErr(box,msg){el(box).innerHTML=`<div class="bg-red-100 border border-red-400 text-red-800 rounded-xl p-2 text-sm">${msg}</div>`}
 function tab(name){
- for(const t of ["explorar","turista","pre","cuenta","admin"]){
+ for(const t of ["explorar","turista","pre"]){
   const p=el("panel-"+t);
   p.classList.toggle("hidden",t!==name);
   p.classList.toggle("active",t===name);
@@ -165,16 +130,13 @@ function tab(name){
  }
  if(name==="pre"){recibidas()}
 }
-const ses=()=>{try{return JSON.parse(localStorage.getItem("samarUser")||"null")}catch(e){return null}};
-const uid=()=>{const s=ses();return s&&s.id?s.id:1};
-const pid=()=>{const s=ses();return s&&s.rol==="PRE"&&s.id?s.id:2};
 const esNuevo=(iso)=>{try{return (Date.now()-new Date(iso).getTime())<30*86400000}catch(e){return false}};
 async function buscar(){
  try{
   el("lista").innerHTML=`<div class="skel"></div><div class="skel"></div><div class="skel"></div>`;
   const p=new URLSearchParams({size:20,q:el("q").value||"",zona:el("zona").value||"",tipo:el("tipo").value||"",sort:el("sort").value});
   const r=await fetch(api+"/api/servicios?"+p); const d=await r.json();
-  el("lista").innerHTML=(d.content||[]).map(s=>`<div class="border rounded-2xl overflow-hidden shadow-soft cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition" onclick="verDetalle(${s.id})"><div class="cardimg cat-${s.categoria}">${sigla(s.categoria)}</div><div class="p-3"><b>${s.nombre}</b> ${esNuevo(s.creadoEn)?'<span class="badge bg-coral-500 text-white">Nuevo</span>':''}<br><small class="text-slate-500">${s.zona} · ${s.tipo} · COP $${s.precioCop}</small> ${s.habilitado?"":'<span class="badge bg-slate-200">deshabilitado</span>'}</div></div>`).join("")||"<small>Sin resultados (los no validados por ADM están ocultos RF085)</small>";
+  el("lista").innerHTML=(d.content||[]).map(s=>`<div class="border rounded-2xl overflow-hidden shadow-soft cursor-pointer hover:shadow-lg hover:-translate-y-0.5 transition" onclick="verDetalle(${s.id})"><div class="cardimg cat-${s.categoria}">${sigla(s.categoria)}</div><div class="p-3"><b>${s.nombre}</b> ${esNuevo(s.creadoEn)?'<span class="badge bg-coral-500 text-white">Nuevo</span>':''}<br><small class="text-slate-500">${s.zona} · ${s.tipo} · COP $${s.precioCop}</small> ${s.habilitado?"":'<span class="badge bg-slate-200">deshabilitado</span>'}</div></div>`).join("")||"<small>Sin resultados</small>";
  }catch(e){showErr("lista","No se pudo buscar: "+e.message)}
 }
 async function verDetalle(id){
@@ -182,9 +144,9 @@ async function verDetalle(id){
   const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
   const r=await fetch(api+`/api/servicios/${id}?fecha=${f}`); const d=await r.json();
   if(!r.ok){showErr("detalleBox",d.error||"No se pudo cargar detalle");return}
-  el("preview").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop} <small>(abierto en tab Turista)</small>`;
+  el("preview").innerHTML=`<b>${d.servicio.nombre}</b> — COP $${d.servicio.precioCop} <small>(abierto en Reservar)</small>`;
   el("detalleBox").innerHTML=`<div class="cardimg cat-${d.servicio.categoria} rounded-2xl mb-2">${sigla(d.servicio.categoria)}</div><b class="text-lg">${d.servicio.nombre}</b> — COP $${d.servicio.precioCop}<br><small class="text-slate-500">${d.fecha} · libres: ${d.cuposLibres} · ${d.notaResenas||"Sin calificaciones todavía"}</small>`+
-  (d.alertaCongestion?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm mt-2">Cerca de capacidad de carga (RF-021)</div>`:"")+
+  (d.alertaCongestion?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm mt-2">Cerca de capacidad de carga</div>`:"")+
   `<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm mt-2">${d.buenasPracticas}</div><small>id seleccionado: <b id="sid">${id}</b></small>`;
   el("detalleBox").dataset.id=id;
   tab("turista");
@@ -196,50 +158,40 @@ async function pagarDemo(){
   const sidEl=document.getElementById("sid");
   const id=(sidEl&&sidEl.textContent)||el("detalleBox").dataset.id;
    if(!id){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Ve a Explorar y elige un servicio primero</div>';return}
-   if(!el("pol").checked){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Acepta la política de cancelación (RF042)</div>';return}
+   if(!el("pol").checked){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Acepta la política de cancelación</div>';return}
    btn.disabled=true;btn.textContent="Procesando pago demo…";
    const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);
-   const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:uid(),fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});
+   const r=await fetch(api+"/api/reservas/pagar-demo",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});
   const d=await r.json();
   el("pago").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-3 text-sm">Reserva #${d.reserva.id} <span class="badge b-PENDIENTE">PENDIENTE</span> · pago ${d.pago.reference} aprobado (mock) · total $${d.reserva.totalCop}<br><small>Falta confirmar como Prestador · Ya visible en tab Prestador</small></div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error||"error"}</div>`;
  }catch(e){showErr("pago","No se pudo pagar: "+e.message)}
  finally{btn.disabled=false;btn.textContent="Reservar y pagar demo"}
 }
-async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId="+uid()+"&agrupado=true");const d=await r.json();if(Array.isArray(d)){el("mis").innerHTML=d.map(x=>`#${x.id} ${x.estado}`).join("<br>");return}el("mis").innerHTML=["activas","completadas","rechazadas","canceladas"].map(g=>`<b>${g}</b><br>${(d[g]||[]).map(x=>`#${x.id} <span class="badge b-${x.estado}">${x.estado}</span> $${x.totalCop} ${x.fecha}`).join("<br>")||"<small>—</small>"}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
-async function solicitar(){try{const sidEl=document.getElementById("sid");const id=(sidEl&&sidEl.textContent)||el("detalleBox").dataset.id;if(!id){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Ve a Explorar y elige un servicio primero</div>';return}if(!el("pol").checked){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Acepta la política de cancelación (RF042)</div>';return}const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);const r=await fetch(api+"/api/reservas/solicitar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:uid(),fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});const d=await r.json();el("pago").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-3 text-sm">Reserva #${d.id} <span class="badge b-PENDIENTE">PENDIENTE</span> sin pago · adjunta el comprobante abajo o paga demo<br><small>Anota el #${d.id} para el comprobante</small></div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error||"error"}</div>`;mis()}catch(e){showErr("pago","No se pudo reservar: "+e.message)}}
-async function comprobante(){try{const r=await fetch(api+`/api/reservas/${el("cp-id").value}/comprobante`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({turistaId:uid(),referencia:el("cp-ref").value})});const d=await r.json();el("cp").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm">EN_VERIFICACION ${d.reference} (falta validar como PRE)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`}catch(e){showErr("cp","No se pudo adjuntar: "+e.message)}}
-async function cancelar(){try{const r=await fetch(api+`/api/reservas/${el("cx-id").value}/cancelar`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usuarioId:uid(),motivo:el("cx-mot").value})});const d=await r.json();el("cx").innerHTML=r.ok?`<div class="bg-slate-200 rounded-xl p-2 text-sm">CANCELADA #${d.id}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;mis();recibidas()}catch(e){showErr("cx","No se pudo cancelar: "+e.message)}}
+async function mis(){try{const r=await fetch(api+"/api/reservas/mis?turistaId=1&agrupado=true");const d=await r.json();if(Array.isArray(d)){el("mis").innerHTML=d.map(x=>`#${x.id} ${x.estado}`).join("<br>");return}el("mis").innerHTML=["activas","completadas","rechazadas","canceladas"].map(g=>`<b>${g}</b><br>${(d[g]||[]).map(x=>`#${x.id} <span class="badge b-${x.estado}">${x.estado}</span> $${x.totalCop} ${x.fecha}`).join("<br>")||"<small>—</small>"}`).join("<br>")}catch(e){showErr("mis","No se pudo cargar: "+e.message)}}
+async function solicitar(){try{const sidEl=document.getElementById("sid");const id=(sidEl&&sidEl.textContent)||el("detalleBox").dataset.id;if(!id){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Ve a Explorar y elige un servicio primero</div>';return}if(!el("pol").checked){el("pago").innerHTML='<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">Acepta la política de cancelación</div>';return}const f=el("fecha").value||new Date(Date.now()+86400000*2).toISOString().slice(0,10);const r=await fetch(api+"/api/reservas/solicitar",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({servicioId:+id,turistaId:1,fecha:f,hora:el("hora").value||null,personas:+el("personas").value||1})});const d=await r.json();el("pago").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-3 text-sm">Reserva #${d.id} <span class="badge b-PENDIENTE">PENDIENTE</span> sin pago · adjunta el comprobante abajo o paga demo<br><small>Anota el #${d.id} para el comprobante</small></div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error||"error"}</div>`;mis()}catch(e){showErr("pago","No se pudo reservar: "+e.message)}}
+async function comprobante(){try{const r=await fetch(api+`/api/reservas/${el("cp-id").value}/comprobante`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({turistaId:1,referencia:el("cp-ref").value})});const d=await r.json();el("cp").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm">EN_VERIFICACION ${d.reference} (falta validar como Prestador)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`}catch(e){showErr("cp","No se pudo adjuntar: "+e.message)}}
+async function cancelar(){try{const r=await fetch(api+`/api/reservas/${el("cx-id").value}/cancelar`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({usuarioId:1,motivo:el("cx-mot").value})});const d=await r.json();el("cx").innerHTML=r.ok?`<div class="bg-slate-200 rounded-xl p-2 text-sm">CANCELADA #${d.id}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;mis();recibidas()}catch(e){showErr("cx","No se pudo cancelar: "+e.message)}}
 async function confirmarId(id){try{const r=await fetch(api+`/api/reservas/${id}/confirmar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-blue-100 border border-blue-500 rounded-xl p-2 text-sm">CONFIRMADA #${d.id}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo confirmar: "+e.message)}}
 async function rechazarId(id){try{const r=await fetch(api+`/api/reservas/${id}/rechazar?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">RECHAZADA #${d.id} (cupo liberado, reembolso demo)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo rechazar: "+e.message)}}
 async function crear(){
  try{
   const body={nombre:el("n-nombre").value,descripcion:"Creado en demo",categoria:el("n-cat").value,zona:el("n-zona").value,precioCop:+el("n-precio").value,tipo:el("n-tipo").value,cupoTotal:+el("n-cupo").value};
-  const r=await fetch(api+"/api/prestador/servicios?prestadorId="+pid(),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const r=await fetch(api+"/api/prestador/servicios?prestadorId=2",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
   const d=await r.json();el("pre").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm">Creado #${d.id} ${d.nombre}</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;mios();
  }catch(e){showErr("pre","No se pudo crear: "+e.message)}
 }
 async function mios(){
  try{
-  const s=ses();
-  el("pre-ses").innerHTML="<small>Viendo servicios de prestador <b>#"+pid()+"</b>"+((s&&s.rol==="PRE")?" (tu sesión)":" (demo — entra en Cuenta como PRE para ver los tuyos)")+"</small>";
-  const r=await fetch(api+"/api/prestador/servicios?prestadorId="+pid());const d=await r.json();
+  const r=await fetch(api+"/api/prestador/servicios?prestadorId=2");const d=await r.json();
   el("pre").innerHTML=d.map(s=>`<div class="border rounded-xl p-2 mb-2"><b>${s.nombre}</b> #${s.id} $${s.precioCop} ${s.habilitado?"":'<span class="badge bg-slate-200">deshabilitado</span>'}<br><button class="bg-slate-200 hover:bg-slate-300 font-bold rounded-xl px-3 py-1 mt-1 w-full" onclick="toggleSrv(${s.id},${s.habilitado})">${s.habilitado?"Eliminar":"Habilitar"}</button></div>`).join("");
  }catch(e){showErr("pre","No se pudo cargar: "+e.message)}
 }
 async function toggleSrv(id,hab){
  try{await fetch(api+`/api/prestador/servicios/${id}/${hab?"eliminar":"habilitar"}`,{method:"POST"});mios();buscar()}catch(e){showErr("pre","No se pudo cambiar: "+e.message)}
 }
-async function recibidas(){try{const r=await fetch(api+"/api/prestador/reservas?prestadorId="+pid());const d=await r.json();el("rec").innerHTML=d.map(x=>{const pagada=x.pagoEstado==="PAGADA",porVerificar=x.pagoEstado==="EN_VERIFICACION";return `<div class="border rounded-xl p-2 mb-2 ${porVerificar?"border-amber-500 bg-amber-50":""}"><b>#${x.id} ${x.servicio}</b> · ${x.fecha} · ${x.personas}p · $${x.totalCop} · <span class="badge b-${x.estado}">${x.estado}</span> <span class="badge ${pagada?"b-PAGADA":porVerificar?"b-EN_VERIFICACION":"bg-slate-200"}">pago: ${x.pagoEstado||"?"}</span><br>${porVerificar?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm mt-1">Comprobante adjunto por validar (RF044)</div>`:""}${x.confirmable?`<div class="grid grid-cols-3 gap-1 mt-1"><button class="${pagada?"bg-mar-700 text-white":"bg-slate-200 text-slate-400"} font-bold rounded-xl px-2 py-1" ${pagada?"":"disabled title='Primero valida el pago'"} onclick="confirmarId(${x.id})">Confirmar</button><button class="bg-slate-200 font-bold rounded-xl px-2 py-1" onclick="rechazarId(${x.id})">Rechazar</button><button class="${porVerificar?"bg-amber-500 text-white":"bg-amber-200"} font-bold rounded-xl px-2 py-1" onclick="validarId(${x.id})">Validar pago</button></div>`:"<small class='text-slate-500'>No confirmable</small>"}</div>`}).join("")||"<small>Sin reservas recibidas</small>"}catch(e){showErr("rec","No se pudo cargar: "+e.message)}}
+async function recibidas(){try{const r=await fetch(api+"/api/prestador/reservas?prestadorId=2");const d=await r.json();el("rec").innerHTML=d.map(x=>{const pagada=x.pagoEstado==="PAGADA",porVerificar=x.pagoEstado==="EN_VERIFICACION";return `<div class="border rounded-xl p-2 mb-2 ${porVerificar?"border-amber-500 bg-amber-50":""}"><b>#${x.id} ${x.servicio}</b> · ${x.fecha} · ${x.personas}p · $${x.totalCop} · <span class="badge b-${x.estado}">${x.estado}</span> <span class="badge ${pagada?"b-PAGADA":porVerificar?"b-EN_VERIFICACION":"bg-slate-200"}">pago: ${x.pagoEstado||"?"}</span><br>${porVerificar?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm mt-1">Comprobante adjunto por validar</div>`:""}${x.confirmable?`<div class="grid grid-cols-3 gap-1 mt-1"><button class="${pagada?"bg-mar-700 text-white":"bg-slate-200 text-slate-400"} font-bold rounded-xl px-2 py-1" ${pagada?"":"disabled title='Primero valida el pago'"} onclick="confirmarId(${x.id})">Confirmar</button><button class="bg-slate-200 font-bold rounded-xl px-2 py-1" onclick="rechazarId(${x.id})">Rechazar</button><button class="${porVerificar?"bg-amber-500 text-white":"bg-amber-200"} font-bold rounded-xl px-2 py-1" onclick="validarId(${x.id})">Validar pago</button></div>`:"<small class='text-slate-500'>No confirmable</small>"}</div>`}).join("")||"<small>Sin reservas recibidas</small>"}catch(e){showErr("rec","No se pudo cargar: "+e.message)}}
 async function validarId(id){try{const r=await fetch(api+`/api/reservas/${id}/validar-pago?rol=PRE`,{method:"POST"});const d=await r.json();el("conf").innerHTML=r.ok?`<div class="bg-amber-100 border border-amber-500 rounded-xl p-2 text-sm">Pago validado #${d.id} (sigue PENDIENTE, ahora confirmable)</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;recibidas()}catch(e){showErr("conf","No se pudo validar: "+e.message)}}
-function camposTipo(){const t=el("r-tipo").value;el("r-tur").classList.toggle("hidden",t==="HOTEL"||t==="RESTAURANTE"||t==="AGENCIA");el("r-pre").classList.toggle("hidden",t==="TURISTA");el("r-pre").classList.toggle("grid",t!=="TURISTA")}
-async function registro(){try{const t=el("r-tipo").value;const body={tipoCuenta:t,nombre:el("r-nombre").value,correo:el("r-correo").value,password:el("r-pass").value,tipoDoc:el("r-tdoc").value,numDoc:el("r-ndoc").value,nacionalidad:el("r-nac").value,paisResidencia:el("r-pais").value,nit:el("r-nit").value,rnt:el("r-rnt").value,ubicacion:el("r-ubi").value,idiomasGuia:el("r-idi").value};const r=await fetch(api+"/api/cuenta/registro",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const d=await r.json();el("reg").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm">Cuenta #${d.usuario.id} ${d.usuario.rol} · ${d.nota}</div><small>Token mock: ${d.token} (JWT en C-2)</small>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;if(r.ok){localStorage.setItem("samarUser",JSON.stringify(d.usuario));mostrarSesion()}}catch(e){showErr("reg","No se pudo registrar: "+e.message)}}
-async function login(){try{const r=await fetch(api+"/api/cuenta/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({correo:el("l-correo").value,password:el("l-pass").value})});const d=await r.json();el("ses").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm">Hola ${d.usuario.nombre} (${d.usuario.rol})</div>`:`<div class="bg-red-100 border border-red-400 rounded-xl p-2 text-sm">${d.error}</div>`;if(r.ok){localStorage.setItem("samarUser",JSON.stringify(d.usuario));mostrarSesion()}}catch(e){showErr("ses","No se pudo entrar: "+e.message)}}
-function logout(){localStorage.removeItem("samarUser");mostrarSesion()}
-function mostrarSesion(){const s=ses();el("ses").innerHTML=s?`<small>Sesión: <b>${s.nombre}</b> ${s.rol} #${s.id} ${s.validado?"":"· pendiente ADM"}</small>`:""}
-async function pendientes(){try{const r=await fetch(api+"/api/admin/pendientes?rol=ADM");const d=await r.json();el("pen").innerHTML=r.ok?d.map(u=>`<div class="border rounded-xl p-2 mb-2"><b>${u.nombre}</b> ${u.correo} ${u.tipoCuenta} NIT:${u.nit||"-"} RNT:${u.rnt||"-"}<br><button class="bg-mar-700 text-white font-bold rounded-xl px-3 py-1 mt-1" onclick="validar(${u.id})">Validar</button></div>`).join("")||"<small>Sin pendientes</small>":`<div class="bg-red-100 rounded-xl p-2 text-sm">${d.error}</div>`}catch(e){showErr("pen","No se pudo cargar: "+e.message)}}
-async function validar(id){try{const r=await fetch(api+`/api/admin/validar-prestador?prestadorId=${id}&rol=ADM`,{method:"POST"});const d=await r.json();el("val").innerHTML=r.ok?`<div class="bg-green-100 border border-green-500 rounded-xl p-2 text-sm">Validado #${d.id}, ${d.serviciosPublicados} ofertas públicas</div>`:`<div class="bg-red-100 rounded-xl p-2 text-sm">${d.error}</div>`;pendientes();buscar()}catch(e){showErr("val","No se pudo validar: "+e.message)}}
-async function notis(){try{const s=ses();if(!s){el("not").innerHTML="<small>Inicia sesión primero</small>";return}const r=await fetch(api+"/api/notificaciones?usuarioId="+s.id);const d=await r.json();el("not").innerHTML=d.map(n=>`<small><b>${n.tipo}</b> ${n.mensaje}</small>`).join("<br>")||"<small>Sin notificaciones</small>"}catch(e){showErr("not","No se pudo cargar: "+e.message)}}
-el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();recibidas();mostrarSesion();
+el("fecha").value=new Date(Date.now()+86400000*2).toISOString().slice(0,10);buscar();mios();recibidas();
 </script>
 </body>
 </html>
