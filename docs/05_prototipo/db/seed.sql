@@ -1,9 +1,9 @@
 -- Seed coherente con mockups 01/02 (precios y cupos visibles en PNG)
-INSERT INTO identitys.usuario (nombre, correo, rol) VALUES
- ('Laura Turista','laura@demo.co','TUR'),
- ('Carlos Prestador','carlos@demo.co','PRE'),
- ('Ana Admin','ana@demo.co','ADM')
-ON CONFLICT DO NOTHING;
+INSERT INTO identitys.usuario (nombre, correo, password_hash, rol, tipo_cuenta, validado) VALUES
+ ('Laura Turista','laura@demo.co','$2b$12$NXG3xv6fBBUfjdvPRKxtG.jKbuQYNMWBywzdkB8JjEiILtIDL45wO','TUR','TURISTA',TRUE),
+ ('Carlos Prestador','carlos@demo.co','$2b$12$NXG3xv6fBBUfjdvPRKxtG.jKbuQYNMWBywzdkB8JjEiILtIDL45wO','PRE','HOTEL',TRUE),
+ ('Ana Admin','ana@demo.co','$2b$12$8GjGLTi8/lcvOIq83UCy9uexyRAKQl3Et8B4kVa1Q0zB2EP1Rudoi','ADM','TURISTA',TRUE)
+ON CONFLICT (correo) DO NOTHING;
 
 INSERT INTO catalogo.servicio (id, nombre, descripcion, categoria, zona, precio_cop, tipo, habilitado, prestador_id) VALUES
  (1,'Playa Cristal','Playa en Parque Tayrona','Playa','Tayrona',120000,'Actividad',TRUE,2),

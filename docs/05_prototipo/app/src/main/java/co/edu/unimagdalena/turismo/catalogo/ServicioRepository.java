@@ -7,14 +7,14 @@ import java.util.List;
 
 public interface ServicioRepository extends JpaRepository<Servicio, Long> {
   @Query(value = """
-    SELECT * FROM catalogo.servicio s WHERE s.habilitado = TRUE
+    SELECT * FROM catalogo.servicio s WHERE s.habilitado = TRUE AND s.validado = TRUE
     AND (CAST(:q AS TEXT) IS NULL OR s.nombre ILIKE CONCAT('%',CAST(:q AS TEXT),'%'))
     AND (CAST(:categoria AS TEXT) IS NULL OR s.categoria = CAST(:categoria AS TEXT))
     AND (CAST(:zona AS TEXT) IS NULL OR s.zona = CAST(:zona AS TEXT))
     AND (CAST(:tipo AS TEXT) IS NULL OR s.tipo = CAST(:tipo AS TEXT))
     AND (:maxPrecio IS NULL OR s.precio_cop <= :maxPrecio)
     """, countQuery = """
-    SELECT count(*) FROM catalogo.servicio s WHERE s.habilitado = TRUE
+    SELECT count(*) FROM catalogo.servicio s WHERE s.habilitado = TRUE AND s.validado = TRUE
     AND (CAST(:q AS TEXT) IS NULL OR s.nombre ILIKE CONCAT('%',CAST(:q AS TEXT),'%'))
     AND (CAST(:categoria AS TEXT) IS NULL OR s.categoria = CAST(:categoria AS TEXT))
     AND (CAST(:zona AS TEXT) IS NULL OR s.zona = CAST(:zona AS TEXT))

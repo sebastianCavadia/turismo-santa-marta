@@ -14,6 +14,7 @@ CREATE TABLE catalogo.servicio (
   precio_cop BIGINT NOT NULL CHECK (precio_cop >= 0),
   tipo VARCHAR(40) NOT NULL,
   habilitado BOOLEAN NOT NULL DEFAULT TRUE,
+  validado BOOLEAN NOT NULL DEFAULT TRUE, -- RF095/RF085: sin validación ADM no es público
   prestador_id BIGINT,
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -66,13 +67,43 @@ CREATE TABLE reservas.auditoria (
   creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Identity mínima (stub demo: TUR/PRE fijos)
+-- Identity (RF001-015 v3: cuenta por tipo + bloqueo + validación + último acceso)
 CREATE TABLE identitys.usuario (
   id BIGSERIAL PRIMARY KEY,
   nombre VARCHAR(120) NOT NULL,
   correo VARCHAR(150) UNIQUE NOT NULL,
-  rol VARCHAR(20) NOT NULL CHECK (rol IN ('TUR','PRE','ADM','GES')),
-  activo BOOLEAN NOT NULL DEFAULT TRUE
+  password_hash VARCHAR(100),
+  rol VARCHAR(20) NOT NULL DEFAULT 'TUR' CHECK (rol IN ('TUR','PRE','ADM','GES')),
+  tipo_cuenta VARCHAR(20) NOT NULL DEFAULT 'TURISTA',
+  estado VARCHAR(20) NOT NULL DEFAULT 'ACTIVO' CHECK (estado IN ('ACTIVO','INACTIVO','BLOQUEADO')),
+  activo BOOLEAN NOT NULL DEFAULT TRUE,
+  validado BOOLEAN NOT NULL DEFAULT TRUE,
+  tipo_doc VARCHAR(20),
+  num_doc VARCHAR(40),
+  nacionalidad VARCHAR(80),
+  pais_residencia VARCHAR(80),
+  fecha_nac DATE,
+  discapacidad BOOLEAN NOT NULL DEFAULT FALSE,
+  nit VARCHAR(40),
+  rnt VARCHAR(40),
+  ubicacion VARCHAR(200),
+  idiomas_guia VARCHAR(200),
+  telefono VARCHAR(40),
+  idioma VARCHAR(10) NOT NULL DEFAULT 'es',
+  intentos INT NOT NULL DEFAULT 0,
+  bloqueado_hasta TIMESTAMPTZ,
+  ultimo_acceso TIMESTAMPTZ,
+  area_responsable VARCHAR(120)
+);
+
+-- Notificaciones mock internas (RF037/039 RF096/100: correo real en C-2)
+CREATE TABLE identitys.notificacion (
+  id BIGSERIAL PRIMARY KEY,
+  destinatario_id BIGINT NOT NULL,
+  tipo VARCHAR(40) NOT NULL,
+  mensaje TEXT NOT NULL,
+  leida BOOLEAN NOT NULL DEFAULT FALSE,
+  creado_en TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 -- Índices búsqueda/filtros (EXP1) y no-overbooking

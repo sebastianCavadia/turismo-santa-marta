@@ -1,6 +1,7 @@
 package co.edu.unimagdalena.turismo.reservapago;
 
 import co.edu.unimagdalena.turismo.catalogo.*;
+import co.edu.unimagdalena.turismo.identity.NotificacionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -17,16 +18,20 @@ public class ReservaPagoService {
   private final AuditoriaRepository auditoria;
   private final ServicioRepository servicios;
   private final DisponibilidadRepository disp;
+  private final NotificacionService notificaciones;
 
   public ReservaPagoService(ReservaRepository r, PagoRepository p, AuditoriaRepository a,
-      ServicioRepository s, DisponibilidadRepository d) {
+      ServicioRepository s, DisponibilidadRepository d, NotificacionService n) {
     this.reservas = r; this.pagos = p; this.auditoria = a; this.servicios = s; this.disp = d;
+    this.notificaciones = n;
   }
 
   @Transactional
   public Reserva pagarDemo(Long servicioId, Long turistaId, LocalDate fecha, String hora, int personas) {
     var s = servicios.findById(servicioId).orElseThrow(() -> new IllegalArgumentException("Servicio no existe"));
     if (personas <= 0) throw new IllegalArgumentException("Personas debe ser > 0");
+    if (fecha == null || fecha.isBefore(LocalDate.now()))
+      throw new IllegalArgumentException("Fecha inválida: no se reservan fechas pasadas (RF066)");
     var d = disp.findByServicioIdAndFecha(servicioId, fecha)
       .orElseThrow(() -> new IllegalArgumentException("Sin disponibilidad para esa fecha"));
     if (Boolean.TRUE.equals(d.bloqueado)) throw new IllegalStateException("Fecha bloqueada");
@@ -55,6 +60,8 @@ public class ReservaPagoService {
 
     d.cupoOcupado += personas; // RF035 (cupos = totales - reservados)
     disp.save(d);
+    notificaciones.notificar(s.prestadorId, "RESERVA_NUEVA",
+      "Nueva solicitud #" + r.id + " en " + s.nombre + " (correo real en C-2)");
     return r;
   }
 
@@ -101,6 +108,8 @@ public class ReservaPagoService {
     r.estado = "CONFIRMADA";
     r = reservas.save(r);
     audit("reserva", r.id, "PENDIENTE", "CONFIRMADA", null);
+    notificaciones.notificar(r.turistaId, "RESERVA_CONFIRMADA",
+      "Tu reserva #" + r.id + " fue confirmada (correo real en C-2)");
     return r;
   }
 
@@ -115,6 +124,8 @@ public class ReservaPagoService {
     audit("reserva", r.id, "PENDIENTE", "RECHAZADA", null);
     liberarCupo(r);
     reembolsar(r.id);
+    notificaciones.notificar(r.turistaId, "RESERVA_RECHAZADA",
+      "Tu reserva #" + r.id + " fue rechazada (correo real en C-2)");
     return r;
   }
 
@@ -131,6 +142,8 @@ public class ReservaPagoService {
     audit("reserva", r.id, antes, "CANCELADA:" + motivo.trim(), usuarioId);
     liberarCupo(r);
     reembolsar(r.id); // RF045 demo: reembolso local si estaba pagada
+    notificaciones.notificar(r.turistaId, "RESERVA_CANCELADA",
+      "Tu reserva #" + r.id + " fue cancelada: " + motivo.trim());
     return r;
   }
 

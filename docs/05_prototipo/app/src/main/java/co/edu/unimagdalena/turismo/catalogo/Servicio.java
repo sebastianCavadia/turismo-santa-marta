@@ -17,6 +17,7 @@ public class Servicio {
   public Long precioCop;
   public String tipo;
   public Boolean habilitado;
+  public Boolean validado = true; // RF095/RF085
   @Column(name = "prestador_id")
   public Long prestadorId;
   @Column(name = "creado_en")

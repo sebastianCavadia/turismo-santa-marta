@@ -57,8 +57,17 @@ public class ReservaController {
   }
 
   @GetMapping("/mis")
-  public List<Reserva> mis(@RequestParam(defaultValue = "1") Long turistaId) {
-    return reservas.findByTuristaIdOrderByIdDesc(turistaId);
+  public Object mis(@RequestParam(defaultValue = "1") Long turistaId,
+      @RequestParam(defaultValue = "false") boolean agrupado) {
+    var todas = reservas.findByTuristaIdOrderByIdDesc(turistaId);
+    if (!agrupado) return todas;
+    // RF041: historial clasificado
+    Map<String, Object> g = new LinkedHashMap<>();
+    g.put("activas", todas.stream().filter(r -> "PENDIENTE".equals(r.estado) || "CONFIRMADA".equals(r.estado)).toList());
+    g.put("completadas", todas.stream().filter(r -> "COMPLETADA".equals(r.estado)).toList());
+    g.put("rechazadas", todas.stream().filter(r -> "RECHAZADA".equals(r.estado)).toList());
+    g.put("canceladas", todas.stream().filter(r -> "CANCELADA".equals(r.estado)).toList());
+    return g;
   }
 
   @GetMapping("/{id}")

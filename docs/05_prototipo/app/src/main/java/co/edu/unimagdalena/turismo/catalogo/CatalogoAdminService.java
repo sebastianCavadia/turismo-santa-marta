@@ -1,5 +1,6 @@
 package co.edu.unimagdalena.turismo.catalogo;
 
+import co.edu.unimagdalena.turismo.identity.UsuarioRepository;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -11,9 +12,10 @@ import java.util.List;
 public class CatalogoAdminService {
   private final ServicioRepository servicios;
   private final DisponibilidadRepository disp;
+  private final UsuarioRepository usuarios;
 
-  public CatalogoAdminService(ServicioRepository s, DisponibilidadRepository d) {
-    this.servicios = s; this.disp = d;
+  public CatalogoAdminService(ServicioRepository s, DisponibilidadRepository d, UsuarioRepository u) {
+    this.servicios = s; this.disp = d; this.usuarios = u;
   }
 
   public record CrearServicioReq(
@@ -33,6 +35,8 @@ public class CatalogoAdminService {
     s.habilitado = true;
     s.prestadorId = prestadorId != null ? prestadorId : 2L;
     s.creadoEn = java.time.LocalDateTime.now();
+    // RF095/RF085: hereda validación del prestador; sin validación no es público
+    s.validado = usuarios.findById(s.prestadorId).map(u -> Boolean.TRUE.equals(u.validado)).orElse(true);
     s = servicios.save(s);
     for (int i = 0; i < 30; i++) {
       Disponibilidad d = new Disponibilidad();

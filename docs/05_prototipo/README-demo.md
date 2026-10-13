@@ -21,6 +21,16 @@ curl "http://localhost:8080/api/servicios?size=3"
 ## Demo botón instantáneo (Hotel Tayrona, 2 personas = COP 700.000 como en mockups)
 
 ```bash
+# 0. Cuenta: registro por tipo + login BCrypt + validación ADM (RF001-006/RF095/RF085)
+curl -X POST http://localhost:8080/api/cuenta/registro -H 'Content-Type: application/json' \
+ -d '{"tipoCuenta":"RESTAURANTE","nombre":"Rest Demo","correo":"rest@demo.co","password":"demo123","nit":"9001","rnt":"R1","ubicacion":"Centro"}'
+# → validado:false, pendiente ADM. Sus ofertas se ocultan en buscar hasta validar:
+curl -X POST "http://localhost:8080/api/admin/validar-prestador?prestadorId=4&rol=ADM"
+curl -X POST http://localhost:8080/api/cuenta/login -H 'Content-Type: application/json' -d '{"correo":"laura@demo.co","password":"demo123"}'
+# 5 fallos → bloqueo 5min (RF005). Política visible en web antes de pagar (RF042).
+```
+
+```bash
 FECHA=$(date -d "+2 days" +%F)
 # 1. Detalle + disponibilidad
 curl "http://localhost:8080/api/servicios/6?fecha=$FECHA"
